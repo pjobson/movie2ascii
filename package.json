@@ -2,6 +2,10 @@
   "name": "Movie_To_ASCII",
   "version": "1.0.0",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pjobson/movie2ascii"
+  },
   "main": "tmc.node.js",
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
@@ -9,7 +13,8 @@
     "fluent-ffmpeg": "^2.0.0-rc3",
     "jp2a": "^0.2.0",
     "minimist": "^1.1.0",
-    "mkdirp": "^0.5.0"
+    "mkdirp": "^0.5.0",
+    "rimraf": "^2.2.8"
   },
   "devDependencies": {},
   "scripts": {
