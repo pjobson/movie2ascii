@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>TOO MANY COOKS</title>
-<link rel="stylesheet" type="text/css" href="assets/cssreset-min.css" />
+<title>__TITLE__</title>
+<script src="assets/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/cssreset.min.css" />
 <style type="text/css">
 
 </style>
@@ -11,62 +12,77 @@
 <audio id="audio" controls="controls">
 	<source src="mp3/audio.mp3" type="audio/mpeg">
 </audio>
-<pre id="tmc">
-</pre>
+<pre id="movie">CLICK PLAY</pre>
 
-<script src="assets/jquery-1.11.2.min.js"></script>
 <script type="text/javascript">
+// This is kind of a giant piece of crap
 // Files are as such: img.0000000000.txt
 var counter = {
-	i: 1,
-	last: 16097
+	frame: 1,
+	last: __LAST_FRAME__,
+	fps: __FPS__,
+	timeout: 0
 };
 
+counter.timeout = counter.last/counter.fps;
 
-$('#audio').bind('play',function(e) {
+// play is called when play button is pressed or after seeking
+// seeked doesn't work in chrome for some reason, so i use this instead.
+$('#audio').bind('play', function(ev) {
+	var el = ev.currentTarget;
+	var curSec = parseInt(el.currentTime,10);
+	// set current time to nearest interger, mainly to simplify guessing the frame.
+	el.currentTime = curSec;
+
+	// get aproximate frame, probably as close as I can get it.
+	counter.frame = parseInt((counter.last / counter.fps) * curSec,10) + 1;
+
 	startMovie();
 });
 
-$('#audio').bind('pause',function(e) {
+$('#audio').bind('pause', function(ev) {
 	stopMovie();
 });
 
-
-var iterate = function() {
-	var x = (counter.i++);
-	if (x>counter.last) {
-		return false;
-	}
-	x += '';
-	while (x.length < 6) {
-		x = '0'+x;
-	}
-	return x;
-};
-
-var getFrame = function() {
-	$.ajax({
-		url: 'txt/img.'+ iterate() +'.txt',
-		success: function(res) {
-			$('#tmc').html(res);
-		}
-	});
-}
-
-var stopMovie = function() {
-	window.clearInterval(window.timer);
-};
-
 var startMovie = function() {
 	window.timer = window.setInterval(function() {
-		if (iterate !== false) {
-			getFrame();
-		} else {
-			stopMovie();
-		}
-	},42);
+		console.log('frame');
+	}, counter.timeout);
+};
 
-}
+var stopMovie = function() {
+
+};
+
+
+
+// var getFrame = function() {
+// 	var iter = iterate();
+// 	if (iter === false) {
+// 		stopMovie();
+// 		return;
+// 	}
+// 	$.ajax({
+// 		url: 'txt/img.'+ iter +'.txt',
+// 		success: function(res) {
+// 			$('#movie').html(res);
+// 		}
+// 	});
+// }
+
+// var stopMovie = function() {
+// 	window.clearInterval(window.timer);
+// };
+
+// var startMovie = function() {
+// 	window.timer = window.setInterval(function() {
+// 		if (iterate !== false) {
+// 			getFrame();
+// 		} else {
+// 			stopMovie();
+// 		}
+// 	},(1000/counter.fps));
+// };
 
 
 </script>

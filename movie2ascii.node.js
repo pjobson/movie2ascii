@@ -1,12 +1,11 @@
 #!/usr/local/bin/node
 
-var fs      = require('fs');                              // http://nodejs.org/api/fs.html
+var fs      = require('fs-extra');                        // http://nodejs.org/api/fs.html  &&  https://www.npmjs.com/package/fs-extra
 var find    = require('find');                            // https://github.com/yuanchuan/find
 var art     = require('ascii-art');                       // https://github.com/khrome/ascii-art
 var jp2a    = require("jp2a");                            // https://github.com/lsvx/node-jp2a
 var ffmpeg  = require("fluent-ffmpeg");                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
 var argv    = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
-var mkdirp  = require('mkdirp');                          // https://github.com/substack/node-mkdirp
 
 var global = {
 	fps: false,
@@ -14,7 +13,8 @@ var global = {
 		top: null,
 		mp3: 'mp3/',
 		img: 'img/',
-		txt: 'txt/'
+		txt: 'txt/',
+		ass: 'assets/'
 	},
 	has: {
 		video: false,
@@ -33,14 +33,18 @@ var global = {
 		formats:  false,
 		codecs:   false
 	},
-	doneWriting: false
+	doneWriting: false,
+	interval: false,
+	frameCount: 0,
+	htmlTitle: null
 };
 
 var init = function() {
-	global.movie     = argv.movie     || false;
-	global.watermark = argv.watermark || false;
-	global.font      = argv.font      || global.font;
-	global.help      = argv.help      || false;
+	global.movie     = argv.movie       || false;
+	global.watermark = argv.watermark   || false;
+	global.htmlTitle = global.watermark || "ASCII Movie";
+	global.font      = argv.font        || global.font;
+	global.help      = argv.help        || false;
 
 	// Top Paths
 	global.path.top  = (!argv.movie) ? false : (argv.path || argv.movie.replace(/\.\w+$/,'')) +'/';
@@ -76,9 +80,12 @@ var startProcessing = function() {
 
 
 var makePaths = function() {
-	mkdirp(global.path.top + global.path.mp3);
-	mkdirp(global.path.top + global.path.img);
-	mkdirp(global.path.top + global.path.txt);
+	console.log("Making directories.")
+	fs.mkdirp(global.path.top + global.path.mp3);
+	fs.mkdirp(global.path.top + global.path.img);
+	fs.mkdirp(global.path.top + global.path.txt);
+	// yes .. I have the humor of a 12-year-old
+	fs.mkdirp(global.path.top + global.path.ass);
 }
 
 
@@ -112,8 +119,9 @@ var probeVideo = function() {
 var processVideo = function() {
 	// ffmpeg processing
 	// this takes the longest
-	// ffmpeg -i ../Too\ Many\ Cooks\ -\ Adult\ Swim.mp4 -r 20 jpg/img.%10d.jpg
-	// ffmpeg -i “whatever.format” -vn -ac 2 -ar 44100 -ab 320k -f mp3 output.mp3
+	// Basically I'm doing these two things... also the first video I tested was Too Many Cooks, because I'm a giant nerd.
+	//    ffmpeg -i Too\ Many\ Cooks\ -\ Adult\ Swim.mp4 -r 20 jpg/img.%10d.jpg
+	//    ffmpeg -i Too\ Many\ Cooks\ -\ Adult\ Swim.mp4 -vn -ac 2 -ar 44100 -ab 320k -f mp3 output.mp3
 
 	if (global.has.audio) {
 		// Extract the audio here
@@ -122,7 +130,7 @@ var processVideo = function() {
 			.audioChannels(2)
 			.audioBitrate('128k')
 			.audioCodec('libmp3lame')
-			.fps(global.fps)
+			.fps(global.fps) // not really sure if I need this, probably not
 			.outputOptions(['-f mp3'])
 			.output(global.path.top + global.path.mp3 + 'audio.mp3')
 			.on('start', function() {
@@ -161,6 +169,7 @@ var processVideo = function() {
 };
 
 var testExtractDone = function() {
+	// Again more promises which I should learn.
 	if (global.isDone.audio === false || global.isDone.video === false) {
 		return;
 	}
@@ -181,19 +190,69 @@ var renderJP2A = function(art) {
 	console.log('ASCII-ifing images.');
 	// find images in img folder
 	find.eachfile(/\.jpg$/,(global.path.top+global.path.img), function(jpg) {
+		// Increment frame counter, for use with the HTML generator
+		global.frameCount++;
+		// TODO: make width user configurable, possibly border, maybe other jp2a options.
 		jp2a( [ jpg, "--width=180", "--border" ],  function( output ){
 			watermarker(output,jpg);
 		});
 	}).end(function() {
 		// hold off for a bit to make sure we're actually done writing.
+		// One day I'll be smart and learn how to use promises, until then I'll keep doing stuff the "stupid" way.
 		global.interval = setInterval(function() {
 			if (global.doneWriting) {
 				clearInterval(global.interval);
 				console.log('');
-				// gen HTML files
+				cleanUp();
 			}
 		},1000);
 	});
+};
+
+var cleanUp = function() {
+	// delete old jpegs.
+	console.log('Removing JPGs')
+	fs.remove((global.path.top+global.path.img), function() {
+		buildHTML();
+	});
+};
+
+var buildHTML = function() {
+	var htmlTemplatePath = __dirname +'/htmlTemplate/';
+	// Copy assets
+	console.log('Copying Assests');
+	find.eachfile(/.+/,htmlTemplatePath+'assets/', function(from) {
+		var to = global.path.top+global.path.ass+from.replace(/.+\/(.+?\.(\w+))$/,'$1');
+		fs.copy(from,to,function(err) {
+			if (err) throw err;
+		});
+	});
+
+	// Build HTML Page
+	console.log('Building HTML Page');
+	fs.readFile(htmlTemplatePath+'index.html', { encoding: 'utf8' }, function (err, html) {
+		if (err) throw err;
+
+		html = html.replace(/__TITLE__/,global.htmlTitle);
+		html = html.replace(/__LAST_FRAME__/,global.frameCount);
+		html = html.replace(/__FPS__/,global.fps);
+
+		console.log('Saving HTML');
+		fs.writeFile(global.path.top+'index.html', html, { encoding: 'utf8' }, function (err) {
+			console.log("Done Writing");
+			console.log("Your files are here: "+ global.path.top);
+			kickOffWebServer();
+		});
+	});
+};
+
+var kickOffWebServer = function() {
+	var connect = require('connect');
+	var serveStatic = require('serve-static');
+	connect().use(serveStatic(global.path.top)).listen(8989);
+	console.log("Serving movie at: http://localhost:8989/");
+	console.log("CTRL+C to quit");
+
 };
 
 var watermarker = function(frame,jpg) {
