@@ -1,0 +1,20 @@
+{
+  "name": "Movie_To_ASCII",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tmc.node.js",
+  "dependencies": {
+    "ascii-art": "0.0.2-alpha",
+    "find": "^0.1.7",
+    "fluent-ffmpeg": "^2.0.0-rc3",
+    "jp2a": "^0.2.0",
+    "minimist": "^1.1.0",
+    "mkdirp": "^0.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
