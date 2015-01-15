@@ -29,3 +29,9 @@ node_modules
 
 # Test directories
 test_movies
+
+# Files from vi
+*~
+*.swp
+*.swo
+
