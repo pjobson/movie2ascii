@@ -37,6 +37,12 @@ var global = {
 		formats:  false,
 		codecs:   false
 	},
+	ascii: {
+		flipx: false,
+		flipy: false,
+		border: false,
+		width: 180
+	},
 	doneWriting: false,
 	interval: false,
 	frameCount: 0,
@@ -49,6 +55,12 @@ var init = function() {
 	global.htmlTitle = global.watermark || "ASCII Movie";
 	global.font      = argv.font        || global.font;
 	global.help      = argv.help        || false;
+
+	// ASCII Config
+	global.ascii.flipx  = argv.flipx  || global.ascii.flipx;
+	global.ascii.flipy  = argv.flipy  || global.ascii.flipy;
+	global.ascii.width  = argv.width  || global.ascii.width;
+	global.ascii.border = argv.border || global.ascii.border;
 
 	// Top Paths
 	global.path.top  = (!argv.movie) ? false : (argv.path || argv.movie.replace(/\.\w+$/,'')) +'/';
@@ -195,8 +207,16 @@ var renderJP2A = function(art) {
 	find.eachfile(/\.jpg$/,(global.path.top+global.path.img), function(jpg) {
 		// Increment frame counter, for use with the HTML generator
 		global.frameCount++;
-		// TODO: make width user configurable, possibly border, maybe other jp2a options.
-		jp2a( [ jpg, "--width=180", "--border" ],  function( output ){
+		// global.ascii.flipx
+		// global.ascii.flipy
+		// global.ascii.width
+		// global.ascii.border
+		var opts = [jpg,"--width="+global.ascii.width];
+		(global.ascii.flipx)  ? opts.push("--flipx")  : void(0);
+		(global.ascii.flipy)  ? opts.push("--flipy")  : void(0);
+		(global.ascii.border) ? opts.push("--border") : void(0);
+
+		jp2a( opts,  function( output ){
 			watermarker(output,jpg);
 		});
 	}).end(function() {
@@ -238,7 +258,7 @@ var buildHTML = function() {
 
 		html = html.replace(/__TITLE__/,global.htmlTitle);
 		html = html.replace(/__LAST_FRAME__/,global.frameCount);
-		html = html.replace(/__FPS__/,global.fps);
+		html = html.replace(/__FPS__/g,global.fps);
 
 		console.log('Saving HTML');
 		fs.writeFile(global.path.top+'index.html', html, { encoding: 'utf8' }, function (err) {
@@ -298,10 +318,10 @@ var writeFile = function(frame,jpg) {
 
 
 var usage = function() {
-	console.log('Usage: ');
+	console.log('Usage:');
 	console.log('	./movie2ascii.node.js --movie name_of_movie.ext');
 	console.log('');
-	console.log('Options: ');
+	console.log('Configuration Options:');
 	console.log('	--help');
 	console.log('	  (optional)');
 	console.log('		Shows this page.');
@@ -318,7 +338,21 @@ var usage = function() {
 	console.log('	  (optional)');
 	console.log('		Watermarks the bottom of the image.');
 	console.log('');
-	console.log('Capability Options: ');
+	console.log('ASCII Options:');
+	console.log('	--border');
+	console.log('	  (optional)');
+	console.log('		Use to add a border to the ASCII.');
+	console.log('	--flipx');
+	console.log('	  (optional)');
+	console.log('		Flip X Axis.');
+	console.log('	--flipy');
+	console.log('	  (optional)');
+	console.log('		Flip Y Axis.');
+	console.log('	--width');
+	console.log('	  (optional)');
+	console.log('		Number of characters in width, scales height automagically.');
+	console.log('');
+	console.log('Capability Options:');
 	console.log('These do no video processing, even if you include other options. They may help to determine issues.');
 	console.log('	--fontlist');
 	console.log('	  (optional)');
