@@ -1,11 +1,15 @@
 #!/usr/local/bin/node
 
-var fs      = require('fs-extra');                        // http://nodejs.org/api/fs.html  &&  https://www.npmjs.com/package/fs-extra
-var find    = require('find');                            // https://github.com/yuanchuan/find
-var art     = require('ascii-art');                       // https://github.com/khrome/ascii-art
-var jp2a    = require("jp2a");                            // https://github.com/lsvx/node-jp2a
-var ffmpeg  = require("fluent-ffmpeg");                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
-var argv    = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
+// Required: jp2a, ffmpeg
+
+var fs          = require('fs-extra');                        // http://nodejs.org/api/fs.html  &&  https://www.npmjs.com/package/fs-extra
+var find        = require('find');                            // https://github.com/yuanchuan/find
+var art         = require('ascii-art');                       // https://github.com/khrome/ascii-art
+var jp2a        = require("jp2a");                            // https://github.com/lsvx/node-jp2a
+var ffmpeg      = require("fluent-ffmpeg");                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
+var argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
+var connect     = require('connect');                         // https://github.com/senchalabs/connect
+var serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
 
 var global = {
 	fps: false,
@@ -137,7 +141,6 @@ var processVideo = function() {
 				console.log('Ripping MP3.')
 			})
 			.on('end', function() {
-				console.log('\nFinished ripping MP3.');
 				global.isDone.audio = true;
 				testExtractDone();
 			})
@@ -247,8 +250,6 @@ var buildHTML = function() {
 };
 
 var kickOffWebServer = function() {
-	var connect = require('connect');
-	var serveStatic = require('serve-static');
 	connect().use(serveStatic(global.path.top)).listen(8989);
 	console.log("Serving movie at: http://localhost:8989/");
 	console.log("CTRL+C to quit");
@@ -259,18 +260,19 @@ var watermarker = function(frame,jpg) {
 	if (global.watermark !== false) {
 		frame = frame.split(/\n/);
 		frame.pop();
+		// each line of the watermark
 		for (var i=0;i<global.watermark.length;i++) {
 			// Split Frame into array
 			var currFrame = frame[(frame.length - global.watermark.length + i)].split('');
 			// Split ascii global.watermark into array
 			var currArt   = global.watermark[i].split('');
 			// Get a start position, offset 5 characters from right border
-			var startPOS  = currFrame.length - 5 - currArt.length + 1;
+			var xPOS  = currFrame.length - 5 - currArt.length + 1;
 
 			for (var j=0;j<currArt.length;j++) {
 				// Replace characters which aren't spaces
 				if (currArt[j] !== ' ') {
-					currFrame[startPOS+j] = currArt[j];
+					currFrame[xPOS+j] = currArt[j];
 				}
 			}
 

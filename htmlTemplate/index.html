@@ -15,8 +15,6 @@
 <pre id="movie">CLICK PLAY</pre>
 
 <script type="text/javascript">
-// This is kind of a giant piece of crap
-// Files are as such: img.0000000000.txt
 var counter = {
 	frame: 1,
 	last: __LAST_FRAME__,
@@ -24,7 +22,7 @@ var counter = {
 	timeout: 0
 };
 
-counter.timeout = counter.last/counter.fps;
+counter.timeout = 1000/counter.fps;
 
 // play is called when play button is pressed or after seeking
 // seeked doesn't work in chrome for some reason, so i use this instead.
@@ -34,9 +32,9 @@ $('#audio').bind('play', function(ev) {
 	// set current time to nearest interger, mainly to simplify guessing the frame.
 	el.currentTime = curSec;
 
-	// get aproximate frame, probably as close as I can get it.
-	counter.frame = parseInt((counter.last / counter.fps) * curSec,10) + 1;
-
+	// get current frame: frames per second * current second
+	// +1 -- 0 time frame is 1.
+	counter.frame = parseInt(counter.fps * curSec,10) + 1;
 	startMovie();
 });
 
@@ -46,43 +44,42 @@ $('#audio').bind('pause', function(ev) {
 
 var startMovie = function() {
 	window.timer = window.setInterval(function() {
-		console.log('frame');
+		counter.frame++;
+		if (counter.frame > counter.last) {
+			stopMovie();
+			return;
+		}
+		getFrame(counter.frame);
 	}, counter.timeout);
 };
 
 var stopMovie = function() {
-
+	window.clearInterval(window.timer);
 };
 
+var prefetchFrames = function() {
+	for (var i=1;i<(counter.last+1);i++) {
+		// console.log(i);
+	}
+};
+// prefetchFrames();
 
-
-// var getFrame = function() {
-// 	var iter = iterate();
-// 	if (iter === false) {
-// 		stopMovie();
-// 		return;
-// 	}
-// 	$.ajax({
-// 		url: 'txt/img.'+ iter +'.txt',
-// 		success: function(res) {
-// 			$('#movie').html(res);
-// 		}
-// 	});
-// }
-
-// var stopMovie = function() {
-// 	window.clearInterval(window.timer);
-// };
-
-// var startMovie = function() {
-// 	window.timer = window.setInterval(function() {
-// 		if (iterate !== false) {
-// 			getFrame();
-// 		} else {
-// 			stopMovie();
-// 		}
-// 	},(1000/counter.fps));
-// };
+var getFrame = function() {
+	// Files are as such: img.0000000000.txt
+	function framePadding() {
+		var f = String(counter.frame);
+		while (f.length<10) {
+			f = '0'+f;
+		}
+		return f;
+	};
+	$.ajax({
+		url: 'txt/img.'+ framePadding() +'.txt',
+		success: function(res) {
+			$('#movie').html(res);
+		}
+	});
+};
 
 
 </script>

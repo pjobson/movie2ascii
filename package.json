@@ -9,11 +9,13 @@
   "main": "tmc.node.js",
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
+    "connect": "^3.3.4",
     "find": "^0.1.7",
     "fluent-ffmpeg": "^2.0.0-rc3",
     "fs-extra": "^0.14.0",
     "jp2a": "^0.2.0",
-    "minimist": "^1.1.0"
+    "minimist": "^1.1.0",
+    "serve-static": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
