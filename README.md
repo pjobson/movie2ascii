@@ -6,7 +6,7 @@ This should work under Linux or OSX, I have no idea if it will run under CYGWIN 
 
 Movie plays well in Firefox, Chrome, and Safari.  I haven't tested it in IE, because I don't really care.
 
-After you run the converter it will setup an HTTP service on your localhost so you can preview the output.
+After you run the converter it will setup an HTTP server on your localhost port 8989 so you can preview the output.
 
 ## Requrirements
 
