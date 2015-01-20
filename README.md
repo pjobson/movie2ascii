@@ -4,9 +4,11 @@ Generates HTML pages to play ascii movies .. yeah .. I got really bored. The ori
 
 This should work under Linux or OSX, I have no idea if it will run under CYGWIN or not.  
 
-Movie plays well in Firefox, Chrome, and Safari.  I haven't tested it in IE, because I don't really care.
+I basically take a movie which ffmpeg can read, convert it to a series of JPG files and an MP3.  The JPG files are then converted to ASCII text files using jp2a.  While this is going on some frame rate data is read and the frames are counted.  I then use an HTML template and create a project.  After it is all done the script stands up an HTTP server on port 8989 for review.  
 
-After you run the converter it will setup an HTTP server on your localhost port 8989 so you can preview the output.
+On the HTML side I'm prefetching all of the frames using jQuery.ajax and serving them based on the FPS.  I also watch the timeupdate event from MediaElement.js and re-synchrononize the current frame to the MP3 time to prevent it from becoming offset, which tended to happen with videos over 5 minutes long with my original version.  As the MP3 plays each text frame is grabbed and updated into a PRE tag.
+
+Movie plays well in Firefox, Chrome, and Safari.  I haven't tested it in IE, because I don't have a virutal machine with Windows on it handy.
 
 ## Requrirements
 
