@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>__TITLE__</title>
+<title>TACKY</title>
 <script src="assets/jquery.min.js"></script>
+<script src="assets/mediaelement-and-player.min.js"></script>
+<link rel="stylesheet" href="assets/mediaelementplayer.css" />
 <link rel="stylesheet" type="text/css" href="assets/cssreset.min.css" />
-<style type="text/css">
-audio {
-	width: 500px;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="assets/style.css" />
 </head>
 <body>
-<audio id="audio" controls="controls">
-	<source src="mp3/audio.mp3" type="audio/mpeg">
-</audio>
+<audio src="mp3/audio.mp3" id="player"></audio>
 <pre id="movie">CLICK PLAY</pre>
 
 <script type="text/javascript">
@@ -27,5 +23,3 @@ var counter = {
 <script type="text/javascript" src="assets/controller.js"></script>
 </body>
 </html>
-
-

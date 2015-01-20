@@ -1,57 +1,55 @@
-
-// play is called when play button is pressed or after seeking
-// seeked doesn't work in chrome for some reason, so i use this instead.
-$('#audio').bind('play', function(ev) {
-	var el = ev.currentTarget;
-	var curSec = parseInt(el.currentTime,10);
-	// set current time to nearest interger, mainly to simplify guessing the frame.
-	el.currentTime = curSec;
-
-	// get current frame: frames per second * current second
-	// +1 -- 0 time frame is 1.
-	counter.frame = parseInt(counter.fps * curSec,10) + 1;
-	startMovie();
-});
-
-$('#audio').bind('pause', function(ev) {
-	stopMovie();
-});
-
-var startMovie = function() {
-	window.timer = window.setInterval(function() {
-		counter.frame++;
-		if (counter.frame > counter.last) {
-			stopMovie();
-			return;
-		}
-		getFrame(counter.frame);
-	}, counter.timeout);
-};
-
-var stopMovie = function() {
-	window.clearInterval(window.timer);
-};
-
-var prefetchFrames = function() {
-	for (var i=1;i<(counter.last+1);i++) {
-		// console.log(i);
-	}
-};
-// prefetchFrames();
-
-var getFrame = function() {
-	// Files are as such: img.0000000000.txt
-	function framePadding() {
-		var f = String(counter.frame);
-		while (f.length<10) {
-			f = '0'+f;
-		}
-		return f;
-	};
+var framePrefetchCount = 1;
+var prefetcher = function() {
 	$.ajax({
-		url: 'txt/img.'+ framePadding() +'.txt',
+		url: 'txt/img.'+ framePadder(++framePrefetchCount) +'.txt',
+		success: function(res) {
+			// Repeat until it gets a 404.
+			prefetcher();
+		}
+	});
+};
+
+var framePadder = function(f) {
+	// Files are as such: img.0000000000.txt
+	f = String(f);
+	while (f.length<10) {
+		f = '0'+f;
+	}
+	return f;
+};
+
+var showFrame = function(frame) {
+	// These should be cached by now, so this will load basically instantly.
+	console.log('frame:'+ frame);
+	$.ajax({
+		url: 'txt/img.'+ framePadder(frame) +'.txt',
 		success: function(res) {
 			$('#movie').html(res);
 		}
 	});
 };
+
+var intervalSpooler = function() {
+	showFrame(counter.frame++);
+};
+
+var player = new MediaElementPlayer('#player',{
+	plugins: ['flash','silverlight'],
+	flashName: 'flashmediaelement.swf',
+	silverlightName: 'silverlightmediaelement.xap',
+	success: function (mediaElement, domObject) {
+		prefetcher();
+		$('#player').bind('play', function(e) {
+			window.spool = window.setInterval(intervalSpooler,counter.timeout);
+		});
+		$('#player').bind('pause', function(e) {
+			window.clearInterval(window.spool);
+		});
+		$('#player').bind('timeupdate', function(e) {
+			// This tries to sync the current frame with the music
+			counter.frame = Math.floor(e.currentTarget.currentTime * counter.fps);
+		});
+	}
+});
+
+
