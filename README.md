@@ -27,8 +27,6 @@ My node-fu is pretty poor, I have a feeling that there is a better way to do som
 
 ### Prerequisites
 
-jp2a and ffmpeg
-
 Ubuntu/Mint/Debian
 ```
 sudo apt-get jp2a ffmpeg nodejs
