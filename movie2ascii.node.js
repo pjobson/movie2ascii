@@ -10,6 +10,7 @@ var ffmpeg      = require("fluent-ffmpeg");                   // https://github.
 var argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
 var connect     = require('connect');                         // https://github.com/senchalabs/connect
 var serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
+var open        = require('open');                            // https://github.com/jjrdn/node-open
 
 var global = {
 	fps: false,
@@ -270,10 +271,11 @@ var buildHTML = function() {
 };
 
 var kickOffWebServer = function() {
+	// Kicks off web server on port 8989 and opens a browser.
 	connect().use(serveStatic(global.path.top)).listen(8989);
 	console.log("Serving movie at: http://localhost:8989/");
 	console.log("CTRL+C to quit");
-
+	open('http://localhost:8989/');
 };
 
 var watermarker = function(frame,jpg) {
