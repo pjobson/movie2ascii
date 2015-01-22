@@ -2,9 +2,9 @@
 
 Generates HTML pages to play ascii movies .. yeah .. I got really bored. The original goal of this project was to convert Too Many Cooks to an ASCII video for a buddy's birthday present, yes I know this can be done in VLC, but that's already been done.
 
-This should work under Linux or OSX, I have no idea if it will run under CYGWIN or not.  
+This should work under Linux or OSX, I have no idea if it will run under CYGWIN or not.
 
-I basically take a movie which ffmpeg can read, convert it to a series of JPG files and an MP3.  The JPG files are then converted to ASCII text files using jp2a.  While this is going on some frame rate data is read and the frames are counted.  I then use an HTML template and create a project.  After it is all done the script stands up an HTTP server on port 8989 for review.  
+I basically take a movie which ffmpeg can read, convert it to a series of JPG files and an MP3.  The JPG files are then converted to ASCII text files using jp2a.  While this is going on some frame rate data is read and the frames are counted.  I then use an HTML template and create a project.  After it is all done the script stands up an HTTP server on port 8989 for review.
 
 On the HTML side I'm prefetching all of the frames using jQuery.ajax and serving them based on the FPS.  I also watch the timeupdate event from MediaElement.js and re-synchrononize the current frame to the MP3 time to prevent it from becoming offset, which tended to happen with videos over 5 minutes long with my original version.  As the MP3 plays each text frame is grabbed and updated into a PRE tag.
 
@@ -62,6 +62,9 @@ Configuration Options:
 	--help
 	  (optional)
 		Shows this page.
+	--browserpreview
+	  (optional)
+		Automatically stands up server and opens browser when done.
 	--movie whatever_movie.ext
 		Name of your movie file.
 		To see what your install of ffmpeg supports use: ffmpeg -formats

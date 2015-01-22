@@ -47,15 +47,17 @@ var global = {
 	doneWriting: false,
 	interval: false,
 	frameCount: 0,
-	htmlTitle: null
+	htmlTitle: null,
+	browserpreview: false
 };
 
 var init = function() {
-	global.movie     = argv.movie       || false;
-	global.watermark = argv.watermark   || false;
-	global.htmlTitle = global.watermark || "ASCII Movie";
-	global.font      = argv.font        || global.font;
-	global.help      = argv.help        || false;
+	global.movie          = argv.movie          || false;
+	global.watermark      = argv.watermark      || false;
+	global.htmlTitle      = global.watermark    || "ASCII Movie";
+	global.font           = argv.font           || global.font;
+	global.help           = argv.help           || false;
+	global.browserpreview = argv.browserpreview || false;
 
 	// ASCII Config
 	global.ascii.flipx  = argv.flipx  || global.ascii.flipx;
@@ -271,11 +273,13 @@ var buildHTML = function() {
 };
 
 var kickOffWebServer = function() {
-	// Kicks off web server on port 8989 and opens a browser.
-	connect().use(serveStatic(global.path.top)).listen(8989);
-	console.log("Serving movie at: http://localhost:8989/");
-	console.log("CTRL+C to quit");
-	open('http://localhost:8989/');
+	if (global.browserpreview) {
+		// Kicks off web server on port 8989 and opens a browser.
+		connect().use(serveStatic(global.path.top)).listen(8989);
+		console.log("Serving movie at: http://localhost:8989/");
+		console.log("CTRL+C to quit");
+		open('http://localhost:8989/');
+	}
 };
 
 var watermarker = function(frame,jpg) {
@@ -327,6 +331,9 @@ var usage = function() {
 	console.log('	--help');
 	console.log('	  (optional)');
 	console.log('		Shows this page.');
+	console.log('	--browserpreview');
+	console.log('	  (optional)');
+	console.log('		Automatically stands up server and opens browser when done.');
 	console.log('	--movie whatever_movie.ext');
 	console.log('		Name of your movie file.');
 	console.log('		To see what your install of ffmpeg supports use: ffmpeg -formats');
@@ -352,7 +359,7 @@ var usage = function() {
 	console.log('		Flip Y Axis.');
 	console.log('	--width');
 	console.log('	  (optional)');
-	console.log('		Number of characters in width, scales height automagically.');
+	console.log('		Number of characters in width, scales height automagically, default: 180.');
 	console.log('');
 	console.log('Capability Options:');
 	console.log('These do no video processing, even if you include other options. They may help to determine issues.');
