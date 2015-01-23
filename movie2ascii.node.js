@@ -10,7 +10,7 @@ var argv        = require('minimist')(process.argv.slice(2)); // https://github.
 var connect     = require('connect');                         // https://github.com/senchalabs/connect
 var serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
 var open        = require('open');                            // https://github.com/jjrdn/node-open
-
+var find        = require('find');                            // https://github.com/yuanchuan/find
 var global = {
 	fps: false,
 	path: {
