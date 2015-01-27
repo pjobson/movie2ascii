@@ -1,7 +1,9 @@
-body,html {
+pre {
 	background-color: black;
 	color: white;
 	font-size: 8px;
+	font-weight: bold;
+	overflow: visible;
 }
 audio {
 	width: 500px;
