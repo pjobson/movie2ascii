@@ -10,6 +10,10 @@ On the HTML side I'm prefetching all of the frames using jQuery.ajax and serving
 
 Movie plays well in Firefox, Chrome, and Safari.  I haven't tested it in IE, because I don't have a virutal machine with Windows on it handy.
 
+## Example
+
+http://pjobson.github.io/movie2ascii
+
 ## Requrirements
 
 ### jp2a v1.0.6
