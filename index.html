@@ -36,8 +36,16 @@
       <section id="main_content" class="inner">
         <p>
           This is an example move I generated from the <a href="https://www.youtube.com/watch?v=XTs_TZFjbJ8">Buffalo Bill Dance
-          Goodbye Horses Silence of the Lambs</a> video matchup on YouTube.  Works well in Chrome, Safari, and Firefox.  Still
-          haven't tested in IE.
+          Goodbye Horses Silence of the Lambs</a> video matchup on YouTube by <a href="https://www.youtube.com/channel/UCI3MkSMt5EJHW0BMDOCO6NA">deanmontrose</a>
+          who does some really neat matchups.  Works well in Chrome, Safari, and Firefox.  Still haven't tested in IE.
+        </p>
+        <p>
+          To generate this video
+          <ol>
+            <li>clone my repo and install</li>
+            <li>download the MP4 video from youtube, I use <a href="http://www.downvids.net/">downvids.net</a></li>
+            <li>node movie2ascii.node.js --movie /path_to_movie/file.mp4 --watermark "Goodbye Horses" --width 180 --browserpreview</li>
+          </ol>
         </p>
         <audio src="mp3/audio.mp3" id="player" data-movie="Goodbye Horses"></audio>
         <pre id="movie" data-movie="Goodbye Horses">CLICK PLAY</pre>
