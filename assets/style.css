@@ -1,0 +1,8 @@
+body,html {
+	background-color: black;
+	color: white;
+	font-size: 8px;
+}
+audio {
+	width: 500px;
+}

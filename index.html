@@ -31,8 +31,18 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a id="im-working-on-this" class="anchor" href="#im-working-on-this" aria-hidden="true"><span class="octicon octicon-link"></span></a>I'm Working On This...</h1>
+        <audio src="mp3/audio.mp3" id="player" data-movie="Goodbye Horses"></audio>
+        <pre id="movie" data-movie="Goodbye Horses">CLICK PLAY</pre>
+
+        <script type="text/javascript">
+        var counter = {
+          frame: 1,
+          last: 5180,
+          fps: 20,
+          timeout: 1000/20
+        };
+        </script>
+        <script type="text/javascript" src="assets/controller.js"></script>
       </section>
     </div>
 

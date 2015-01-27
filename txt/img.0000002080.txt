@@ -1,0 +1,68 @@
+ .......',,'         ...,..                  ..;:;.     'l:''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''col'.................................
+........',,'            .                     .....     'l:''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''col..................................
+.......',;;,.........                                   'l:''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''col..................................
+  .....'',,;:::::::::::;;;;;;;,,,''''''.........        ,l:'''''''''''''''''''''''''''''''''''''''''''''',,,'''''''''''''''''''''''''''''''''''col..................................
+        .,',:::::::::::::::cccccccccccccccccccccccccc::clolc:::::::::;,,,,,,,,,,,,,,,,,,,,,,,,,,;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;,cdo..,:::..................''........
+        .,.,::::::::::::::::::ccccccccccccccclllllllllllllllcc::ccc:::::::::::::::::cccccccccccccccccccccccccccccccccccccccccc::::ccccc:::ccc:;ldo...':l'..................'',,,,'''
+  ..    .;',::::::::::::ccccccc::cccccccccccllllllllllllllllc::::::;;;;;;;::::::::::cccccccccccccccc::cccccc::::::::::::c::::::::::;:::;,,;;;;;coo',;.... ..............''''','''''.
+  ..  . .;',::::::ccccccccccccc:;cccccclllllllllll:;llllllllcc;',,,,,,,'',;,,,;;;;;;;;;;;;;;,,,,,,,,'',,,,,,,,,,,,''''',::'.'''.'............,;coo'.:c:'. ............''',,,,,;;;,''
+        .,',:::cccccccccccccccccccccllllllllllllllllllllllllcc;.,,,,,,''',,,,,,,,;;;;;,,;;;,,''''''''''''''',,;;,,''''';::..''.......'''.''..;;coo,...,:. ..',,,,,,,,,,,;;;;;;,,,'''
+         ,',:::cccccccccccccccccccccllllllllllllllllllllllllcc;,;,,,'','',;;,',;'';;;;,;:;;,,;;;;::;,,;;;;,,:::::,,,,,';cc'...........'..','.::cod;;:'..  .',,,,,,,,,'''''',,,'''''.
+         ,',:::cccccccccccccccccccccllllllllllllllllllllllllcl;,c,;:;;:,;:',:;;c,';:::;:c::;;c:,;cc;;cc;,:c;cccc:,,,,,';cc,'''...'...........:ccod;.'::'. .',,,,,,,,,,,,,,,,,,'''...
+         ,,,:::::::::cccccccccccccccllllllllllllllllllooooolcl:,:,,,';:;;:,,c;,:;;:;::;;;:c:;:;,,:c,,;::;:;;:;;:;,''''';:c'',,,..,,,..,'.....:ccoo:'....  .',,,,'''''''''''''''.....
+         ,,,::::::::ccccccccccccccccllllllllllllllloooooooolcl:,,''''''''',;;,',,,,,,;,,,,,,,,,,,,;,,,,;;;,,,,,,,,,,,,,;cc''''''.'''........':ccodc::;..  .',''''..''......'''......
+         ,;,:::cccccccccccccccccccccllllllllllllllllooooooolllcc::;;;;;;;;;;;;;;;;;;:::::::::::::::c::::::::::::::::::::cc:::::::::::;;:::::ccccodl,'''....'''''..''''''........'',,
+ .       ,;,:::ccccc::::::::::::::::ccccccllllllllllooooooolllllccccc::::::::cc:;,,,,,;::ccc:;:cl;;:ccclllc;;:ccccccclllllllllllllllcccccclllcccooolllccccccccc::::::::::::;;;;::c:,
+ .       ';,:::ccccc:;;;;;;;;;;;;,,,;;::;;::::ccccccloooollllllc,'...........'cc'........:lc'.'cc..'clllll:..,clllllllllllllllllllllccccccclllllooooooooollllllllllcccccccccccccccc:
+         ':,:::cccccc:;;;;;:::;::;;;;:::;::::::cccccloooooollllc''''..........cc'...;,'..,lc'.'cc..'clllll:..,lllllllllllllllllllllllllccccccccclooooooooollllllllllllcccccccccccc::
+.'.......,:;cccccccc::;;;;;;;;;;;;;;:;,;;;;:;;;;;;:cloooooollllc..............cc,........:cc,.'cc...coolll:..,loooooolllllllllllllllllllccccccccllooooooooooooo;;lllllcc::ccllccccc;
+.c:::::::;;;ccccccccc::::::::::::::::::::::c:::::cccloooollllllc.....'''''....cc,...;;,..'cl,..cc...:ccclo:..,clllollllllllllllllllllllllllllcccloooooooooooooolllllllllclllccccccc:
+':::::::::;;ccccccccc::::::::::::::::::::::::cccccccloooolllllll;'...........'cc,........'cl,.'cc.......,l:.......:loooooooolllllllllllllllllcccloooooooooooolllllllllllllllccccccc:
+.,,,,,,,,,,,cccccccc:::::::::::::::::::::::::::::::cloooolllllllcllc:::::::cc:cc:,,,;;;;:cllc;:lc;;;,,;;clc:;;;;;;lllooooooolllllllllllllllllcccooooooooooooolllllllllllllllccccccc:
+...........'cccccccc:::::::::::::;:::::::::::::::::clooooooollllcccccc:::::ccccccl:,',,;;cllc;:lll:,,;col;,:oc;,;;coc;,coolc:,,,,;cllllllllllcccloooooooooooolllllllllllllllccccccc:
+...........'cccccccc::::::::::::;;:::::::::::::::::clooooooollllc::::::::::::clc:....''..'cl,..::...,cloc..'l:....,l:..;ol'........clllllllllcccloooooooooooooolllllllllllllcccccc::
+.;;,,,,'''.'cccccccc::::;;;::::::;::::::::::::::cc::loooooolllollc:::::::ccccccl;....,:cccll,..'...'llloc..'l:.....,;..;o:....;clclllllllllllcccoooooooooooooooollllllllllllllcccc::
+.c::::;..;'':ccccccc::::;;;;;;::;;::::::::::::::cccccooooooolllllc:::::ccccccccll:,'.....,cl,....'..;clll..'l:..,;.....;ooc;'....':lolllllllllcclooooooooooolllllllllllllllccccccc::
+':::::c:::'':cccccc::::::::;;;::;;::::::::::::::cccccooooooolllol::::::::cccccclc,;:;;....cl,..,cc,..;lll'.'lc..,oc....;olcccc:,...coooollllloc::::cclclccccclccc::cccccc:::::ccc:::
+..'''',;;:.':cccccc::::::::::::::;:c:::::::::::::cllcoooooollllllllllccc:::ccccc:'.......;ll,..;llc,..:ll'.'lc,.;oo:...:oc'......':ooooollllloc:;;';:l;:;;;,:::c:,,,;,,,;;;;;;;;:,;,
+ .......;;.':cccccc::::::::::::::::::::::::::::::ccclooooooolllcclllllllccccccccllc:;::cclllc::llllcc:colcclolcclooolccloolcc::cloooooooooolllc:;:ccclc::cc:ccccc;;::;:;;;;;;;,,:;;,
+ .......;;.':ccccc:::::::::::::::::::::::::::::::ccclooooooollll::cccccccccccccl:.....'''ll;'':o;'''''',:o:,''',,,';ol;,,ooo:,,coooooooooooooll;,;:::c:,;;;;;,,::',,;;:,',;,,,;;;;;;
+ .......;;..:ccccc:::::::::::::::::::::::::::ccccccclooooooollllc;;:ccc:::::cccl:...,,,,;ll,..:o,..',;;;cl:,,'...,,:ol..'ooo,..cooooooooooooollc:clllllllccccccccc::::c:::;;:;;;;;;;
+ ......';,..:ccccc::::::::::::::::::::::::::::::cccclloooooollllc::::cc:::clllooc...,,,cooo,..:o,..',,;oooooo:..;ooool'.'lll,.'coooooooooooooolc;::::::ccc;::::::c:;;;:::::;;;;;;:::
+ ......':'.':ccccc:::::::::::::::::::::::::::::ccccccloooooollllccccccccccloooooc,,,;;;looo;.'co;.',,,:ooooooc..cddddl'.'',,'',ldooooooooodddoc::ccccccclcccccc:cccc:::::::;;;;;;;;;
+ ......,:'.':ccccc:::::::::::::::::cccllllllllllllllloooooolclllllllloolcccllcloc'':ooooool;,;ol;,;loooooddddc,,lddddl,,;:c:,',odddddddoooooooc::::ccccccccccccccc:::::::::::::::::;
+ ......;:'.':ccccc::::::::::::::::ccllloooooooooooooooooooollllccccccccc:ccccccl:'.:llllllc;;;ll;,;looooooooo:,;cooooc',:ool,,;ooooooooooollllc::::ccccccccc::::::::::::::::::::ccc:
+ ......;:...;ccccc::::::::::::::::clllloooooooooooooooooooolllllcc::::::::;:::clccccccccccc:cccccc:cccccclllllccllllllccllllllllllllllllllllllc:::::::cccccc::::::::::::::::::::ccc:
+ ......:;...;ccccc::::::::::::ccccclllllloooooooooooooooooolclllccccc::;:::ccccccccc::::::::::::::::::::::::cccc::ccc::::::::::::;;;::::::ccccc::::::::::cccccc:::::::::::::::::ccc:
+ .....'c,...;cccc:::::::::::::::::cllllllooolooooooooooooooollllcc::c:::::;:ccccc:::::::::::::cc:::cccccc:::::::::c::::::::::::::;;;:::::::ccc::::::::::::::::::::::::::::::::::ccc:
+ .....,c,''';cccc::::::::::::::::cclllooc,,:oooooooooooooooollllc:::ccccc::;::ccc::cccccc::::ccccccccc::::::::c::::::::::::::::::::::::::::ccc:::::::::::::::cc:::::::::::::::::ccc:
+...,;;::::::cccccc:::::::::::::::ccllllol;:coooooooooooooooollllccccccccc:::::cllllcccccccccccccccccccccc::::ccccccccccccccccccccc::::::::ccccc:::::ccccccccccc:::::::::::::;;::ccc:
+ ..;:::::::ccccccc::::::::::::::::cllllllllllllllllc:clloollcclcccllllllcccccccolcccccccccccccccccc:::::::::::cccc::::::::::::::::::::::::cclcc:::::::::::::ccc:::::::;;;;;;;;::ccc:
+ ..;:;,,,,,,,,,,,,''::::::::::::::c:::::::;;;;;,,,,'',:cllcccclccccclllccclllccolcccccccccccccccccc:::::::::cccccccccccc:::::::::::::::::::ccc::::::::::::::::::::::::::;;;;;;::ccc:
+ ..,:'   ...........;::::::::::::::,''''''''''''''''''::ccc::clcc::clccccclllclolllllllllllllcccccccccccclllllllllllllllcccccccccccccccccccccc:;::::::ccc:::::::::::::::;;;;;;::cc::
+ ..,:'             .,:::::::::::::;''''''''''''''''',;cccccc:ccc:::clccccclllcclllllcccccllccccccccccccccclllllccccccccccccc:::ccccccccc::cccc:;::::::ccccccccc::::::::::::;;;:ccc::
+  .':'              .:::::::::::::;''''''''''''''''',clllllcccccc:::cccccclllccllccccccccccccccccccccccccccccccc::cccccc::::::::::ccccc:::cccc:;;;::::ccccccccc::::::::::::;;;:ccc::
+   .:,               ,;:::::::::;;;'''''''''''''....':llllllccccc::ccccccclllcclcccccccccccccccccccccccccccccccccccccc::ccc:::::::::::::::cccc:;;;::::cccccc::::::::::::;;;;;;:ccc::
+   .;;.              ...............................':llllllccccc::ccccccllcccclccccccccccccccccllllllllllllllllcccccccccccccccccccc::::cccccc:;;;::::ccccccccc:::::::::;;;;;;:cccc:
+   .;:.                    .........................':llllllcccccc:cccccccccccllcccccccccccccccccccccccccccccccccccccccccccccc:::::::::::::ccc:;;;;::::::::::cc:::::::;;;;;;;;:cccc:
+ ...,:.                    ........................';:lllllc:::cccccccccccccccllccccccccccccccccccccccccc:::ccccccccccccc::ccc:::::::::::::ccc:;;;;::::::::::::::::::;;;;;;;;;:cccc:
+.,',;:.               ..   .......................',:clllllc:::c::cccccccccccclllccccc::cccclllccllllllllccccllccccccllllllllccccccccccccccccc::;;;::::::::::::::::::;;;;;;;;;:ccc::
+.:::::.              ....    .....................;:cllllllc:::;'..........',,ccc:,.....':llll:..............:'.......'''''',:;,,,'',,,,,,,,;c::;;;::::::::::::::::::;;;;;;;;;:ccc::
+.;::::.           ....'..     ............'.......:ccccc::::;;:,.....  ......;cl:.....',.,oool:..............;...........  ..;'..............:::;;;:::::::::::::::::::::;;;;;;:ccc:;
+...'';'   ...............      ........''.........,,''''''''',:,....  ..''...;cc,..';lcc;;c:;::......,;;,....,.....;::,.. ...;..'.....,,.....:::;;;:::::::::::::::::::::;;;;;;:::::;
+ ....;'     ......             ..............................,:;'......';,'.'ccc:'',:lc::;''';;.....,;:c:....,...';llcc:'....;..'......'.....::;;;;:::::::::::::::::::::;;;;;;:::::;
+ ....;,                       ...............................,;;;,,..',';::;;ccc:''';;cllc,'';:.....',;;:'...,'.,lclcccc'....;..''..  ...'...::;,;;::::::::::::::::::::::::;;;:::::;
+ ....;'                         .............................';;:::;'..';:clllc:,.....,colc'.,:''...'',;,....,'.ccc:;:::,'...;....... .......::;,;;:::::::::ccc:::::::::::::::,..''.
+ ....,,                         .............................';;;;;'...,cclllll'.   ..';ll:'.::',,'.',;;,;;,.,';c,.';:::;....;.......... ...'::;;::cccccccccccc:::::::::::::::.     
+ ....',                         .............................';,;'...';:clolllc'    .'.,::....;';clc:::;;;::,;;l;.  .....   .,............'.,::;;::cccclllllcccccccccc::::::::......
+ ....';.                         ......  ....................';;::;::cclllllllc'   ... .',....;,clolllc:::c:;:;,..      ....,;.....'......,'':;,....''''',,,,,,;;;:::::::::::,......
+ .....;.                           ..........................';;;::::::cccccccc:;;;;;;;;;;;,;;c:clllllcccccccc:,,,'''''',,,,::'.............';;,............    ....................
+ .....,.                            .........  ...............;;;;;;:::::::cccccc:::cc:::::ccccccccccccccccccccccccccccc:::cccc::;;;;;;;,,;;::,'.....................       ........
+ .....,..                                 ....................''''''',;:;,,;;;;;;;;;;;;;;;;;;::::::ccccccccccccccccccccccccccccccc::::::::::::,'...................................'
+ .....,.    .........              .....................'''',,,,,,,,,;cc.                       .......................................'''',,;,.....................................
+ .....,'.............''''',,,,,,;;;;::::::ccccccccccccllllllllllllooolll.       ____                       _   _                        _   _.......................................
+ .....;;;;;;;;;:::::::::::::::cccccccccccccccllllllllllllllllllllllllllc......./.___|...___.....___.....__|.|.|.|__..  _   _    ___    | | | |...___...._.__...___....___...___.....
+ .....::::::;;;:::::::::::::::::::::::::::::::::::::::::;;;;;;;,,,,,,,,'...'''|'|''_'''/'_'\'''/._.\.../._`.|.|.'_.\..|.|.|.|../._.\...| |_|.|../._.\..|.'__|./.__|../._.\./.__|....
+ .....;;:::;;;;,,;;;;,,,,,,,,,,,,,,,,,''''...............................'',,;|;|_|;|;|;(_);|;|;(_);|;|;(_|;|;|,|_),|,|,|_|,|,|,,__/'''|.._..|.|.(_).|.|.|....\__.\.|..__/.\__.\....
+ ...................................''''''''''''''''''...................',,,,,\____|,;\___/;;;\___/;;;\__,_|;|_.__/;;;\__,;|;;\___|;;;|_|,|_|,,\___/,,|_|,,,,|___/''\___|'|___/....
+ ...................................'''''''''''''''''''''''''''''....'''.',,,,;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;|___/;;;;;;;;;;;;;;;;;;,,,,,,,,;;;;;;,,,,,,,;;,,,,,,,,,,,,'..
