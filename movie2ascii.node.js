@@ -258,7 +258,7 @@ var buildHTML = function() {
 	fs.readFile(htmlTemplatePath+'index.html', { encoding: 'utf8' }, function (err, html) {
 		if (err) throw err;
 
-		html = html.replace(/__TITLE__/,global.htmlTitle);
+		html = html.replace(/__TITLE__/g,global.htmlTitle);
 		html = html.replace(/__LAST_FRAME__/,global.frameCount);
 		html = html.replace(/__FPS__/g,global.fps);
 
