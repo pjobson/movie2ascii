@@ -3,15 +3,14 @@
 <head>
 <title>__TITLE__</title>
 <script src="assets/jquery.min.js"></script>
-<script src="assets/mediaelement-and-player.min.js"></script>
-<link rel="stylesheet" href="assets/mediaelementplayer.css" />
 <link rel="stylesheet" type="text/css" href="assets/cssreset.min.css" />
 <link rel="stylesheet" type="text/css" href="assets/style.css" />
 </head>
 <body>
-<audio src="mp3/audio.mp3" id="player" data-movie="__TITLE__"></audio>
-<pre id="movie" data-movie="__TITLE__"></pre>
-
+<div id="container">
+	<audio src="mp3/audio.mp3" id="player" controls preload="auto" data-movie="__TITLE__"></audio>
+	<pre id="movie" data-movie="__TITLE__"></pre>
+</div>
 <script type="text/javascript">
 var counter = {
 	frame: 1,

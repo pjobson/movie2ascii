@@ -2,7 +2,13 @@ body,html {
 	background-color: black;
 	color: white;
 	font-size: 8px;
+	padding-top: 10px;
 }
 audio {
-	width: 500px;
+	width: 900px;
+	margin: 0 auto;
+}
+#container {
+	margin: 0 auto;
+	width: 900px;
 }
