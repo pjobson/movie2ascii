@@ -11,6 +11,8 @@ var connect     = require('connect');                         // https://github.
 var serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
 var open        = require('open');                            // https://github.com/jjrdn/node-open
 var find        = require('find');                            // https://github.com/yuanchuan/find
+var ytdl        = require('youtube-dl');                      // https://github.com/fent/node-youtube-dl
+var filesize    = require('filesize');                        // https://github.com/avoidwork/filesize.js
 var global = {
 	fps: false,
 	path: {
@@ -47,11 +49,13 @@ var global = {
 	interval: false,
 	frameCount: 0,
 	htmlTitle: null,
-	browserpreview: false
+	browserpreview: false,
+	movieURL: false
 };
 
 var init = function() {
 	global.movie          = argv.movie          || false;
+	global.movieURL       = argv.movieURL       || false;
 	global.watermark      = argv.watermark      || false;
 	global.htmlTitle      = global.watermark    || "ASCII Movie";
 	global.font           = argv.font           || global.font;
@@ -65,17 +69,22 @@ var init = function() {
 	global.ascii.border = argv.border || global.ascii.border;
 
 	// Top Paths
-	global.path.top  = (!argv.movie) ? false : (argv.path || argv.movie.replace(/\.\w+$/,'')) +'/';
-	global.path.top  = (!argv.movie) ? false : global.path.top.replace(/\/+$/,'/'); // removes duplicate trailing slashes
+	global.path.top  = argv.path || argv.movie || 'test';
+	global.path.top += '/';
+	global.path.top  = global.path.top.replace(/\.\w+$/,'').replace(/\/+$/,'/');
 
 	// Capability Options
 	global.info.fontlist  = argv.fontlist   || false;
 	global.info.formats   = argv.formats    || false;
-	global.info.codecs    = argv.codecs || false;
+	global.info.codecs    = argv.codecs     || false;
 
-	if (global.info.fontlist || global.info.formats || global.info.codecs) {
+	if (global.movie === false && global.movieURL === false) {
+		usage();
+	} else if (global.movie !== false && global.movieURL !== false) {
+		usage();
+	} else if (global.info.fontlist || global.info.formats || global.info.codecs) {
 		info();
-	} else if (!argv.movie || argv.help) {
+	} else if (argv.help) {
 		usage();
 	} else {
 		startProcessing();
@@ -83,22 +92,60 @@ var init = function() {
 };
 
 var startProcessing = function() {
+	console.log('ASCIIFICATION STARTED');
 	// I can do all of this at the same time.
 	// Make some paths
 	makePaths();
 
-	// Probe the video.
-	probeVideo();
+	if (global.movieURL) {
+		downloadMovie();
+	} else {
+		// Probe the video.
+		probeVideo();
+	}
 
 	// Render the FIGlet
+	// This can be done any time.
 	if (global.watermark) {
 		renderFIGlet();
 	}
 }
 
+var downloadMovie = function() {
+	// Switch to http.
+	global.movieURL = global.movieURL.replace(/https:/,'http:');
+	var formatID = 0;
+	ytdl.getInfo(global.movieURL, [], function(err, info) {
+		if (err) throw err;
+		global.movie = info._filename;
+		info.formats.forEach(function(fid) {
+			if (fid.ext !== 'mp4') return;
+			if (!fid.fps) return;
+			if (formatID===22) return;  // 22 is the best as of today
+			if (fid.format_id === '18' || fid.format_id === '22') {
+				formatID = fid.format_id;
+			}
+		});
+
+		var video = ytdl(global.movieURL,
+			['--max-quality='+ formatID],
+			{ cwd: __dirname }
+		);
+		video.on('info', function(info) {
+			console.log('\tDownload started');
+			console.log('\t\tFile size: ' + filesize(info.size));
+		});
+		video.pipe(fs.createWriteStream(global.movie));
+		video.on('end', function() {
+			console.log('\tVideo Downloaded');
+			probeVideo();
+		});
+	});
+};
+
 
 var makePaths = function() {
-	console.log("Making directories.")
+	console.log("\tMaking directories.")
 	fs.mkdirp(global.path.top + global.path.mp3);
 	fs.mkdirp(global.path.top + global.path.img);
 	fs.mkdirp(global.path.top + global.path.txt);
@@ -110,6 +157,7 @@ var makePaths = function() {
 
 var probeVideo = function() {
 	// Probe video.
+	console.log('\tProbing video.');
 	ffmpeg.ffprobe(global.movie, function(err, metadata) {
 		metadata.streams.forEach(function(stream) {
 			global.has[stream.codec_type] = true;
@@ -140,7 +188,6 @@ var processVideo = function() {
 	// Basically I'm doing these two things... also the first video I tested was Too Many Cooks, because I'm a giant nerd.
 	//    ffmpeg -i Too\ Many\ Cooks\ -\ Adult\ Swim.mp4 -r 20 jpg/img.%10d.jpg
 	//    ffmpeg -i Too\ Many\ Cooks\ -\ Adult\ Swim.mp4 -vn -ac 2 -ar 44100 -ab 320k -f mp3 output.mp3
-
 	if (global.has.audio) {
 		// Extract the audio here
 		var audio = new ffmpeg(global.movie)
@@ -152,9 +199,10 @@ var processVideo = function() {
 			.outputOptions(['-f mp3'])
 			.output(global.path.top + global.path.mp3 + 'audio.mp3')
 			.on('start', function() {
-				console.log('Ripping MP3.')
+				console.log('\tRipping MP3.')
 			})
 			.on('end', function() {
+				console.log('\tFinished ripping MP3s.');
 				global.isDone.audio = true;
 				testExtractDone();
 			})
@@ -172,10 +220,10 @@ var processVideo = function() {
 		.fps(global.fps)
 		.output(global.path.top + global.path.img + 'img.%10d.jpg')
 		.on('start', function() {
-			console.log('Ripping JPGs.')
+			console.log('\tRipping JPGs.')
 		})
 		.on('end', function() {
-			console.log('\nFinished ripping JPGs.');
+			console.log('\tFinished ripping JPGs.');
 			global.isDone.video = true;
 			testExtractDone();
 		})
@@ -190,12 +238,13 @@ var testExtractDone = function() {
 	if (global.isDone.audio === false || global.isDone.video === false) {
 		return;
 	}
+	console.log("\tMedia ripping finished.")
 	renderJP2A();
 };
 
 var renderFIGlet = function() {
 	// render watermark
-	console.log('Rendering watermark.');
+	console.log('\tRendering watermark.');
 	art.Figlet.fontPath = 'FIGlet_fonts/';
 	art.font(global.watermark, global.font, function(rendered){
 		global.watermark = rendered.split(/\n/);
@@ -204,7 +253,7 @@ var renderFIGlet = function() {
 };
 
 var renderJP2A = function(art) {
-	console.log('ASCII-ifing images.');
+	console.log('\tASCII-ifing images.');
 	// find images in img folder
 	find.eachfile(/\.jpg$/,(global.path.top+global.path.img), function(jpg) {
 		// Increment frame counter, for use with the HTML generator
@@ -236,7 +285,7 @@ var renderJP2A = function(art) {
 
 var cleanUp = function() {
 	// delete old jpegs.
-	console.log('Removing JPGs')
+	console.log('\tRemoving JPGs')
 	fs.remove((global.path.top+global.path.img), function() {
 		buildHTML();
 	});
@@ -245,7 +294,7 @@ var cleanUp = function() {
 var buildHTML = function() {
 	var htmlTemplatePath = __dirname +'/htmlTemplate/';
 	// Copy assets
-	console.log('Copying Assests');
+	console.log('\tCopying Assests');
 	find.eachfile(/.+/,htmlTemplatePath+'assets/', function(from) {
 		var to = global.path.top+global.path.ass+from.replace(/.+\/(.+?\.(\w+))$/,'$1');
 		fs.copy(from,to,function(err) {
@@ -254,7 +303,7 @@ var buildHTML = function() {
 	});
 
 	// Build HTML Page
-	console.log('Building HTML Page');
+	console.log('\tBuilding HTML Page');
 	fs.readFile(htmlTemplatePath+'index.html', { encoding: 'utf8' }, function (err, html) {
 		if (err) throw err;
 
@@ -262,13 +311,17 @@ var buildHTML = function() {
 		html = html.replace(/__LAST_FRAME__/,global.frameCount);
 		html = html.replace(/__FPS__/g,global.fps);
 
-		console.log('Saving HTML');
+		console.log('\tSaving HTML');
 		fs.writeFile(global.path.top+'index.html', html, { encoding: 'utf8' }, function (err) {
-			console.log("Done Writing");
+			console.log("\tDone Writing");
 			console.log("Your files are here: "+ global.path.top);
 			kickOffWebServer();
 		});
 	});
+};
+
+var printDone = function() {
+	console.log('DONE ASCIIFICATION');
 };
 
 var kickOffWebServer = function() {
@@ -278,6 +331,8 @@ var kickOffWebServer = function() {
 		console.log("Serving movie at: http://localhost:8989/");
 		console.log("CTRL+C to quit");
 		open('http://localhost:8989/');
+	} else {
+		printDone();
 	}
 };
 
@@ -336,6 +391,9 @@ var usage = function() {
 	console.log('	--movie whatever_movie.ext');
 	console.log('		Name of your movie file.');
 	console.log('		To see what your install of ffmpeg supports use: ffmpeg -formats');
+	console.log('	--movieURL https://www.youtube.com/watch?v=SOME_VIDEO_ID');
+	console.log('       (optional)');
+	console.log('		URL of video, use this instead of --movie.');
 	console.log('	--path /path/to/output/to/');
 	console.log('	  (optional)');
 	console.log('		Name of path to build to, creates path based on movie file name by default.');

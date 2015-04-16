@@ -10,13 +10,18 @@
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
     "connect": "^3.3.4",
+    "filesize": "^3.1.2",
     "find": "^0.1.7",
     "fluent-ffmpeg": "^2.0.0-rc3",
     "fs-extra": "^0.14.0",
     "jp2a": "^0.2.0",
+    "mime-types": "^2.0.10",
     "minimist": "^1.1.0",
+    "mkdirp": "^0.5.0",
     "open": "0.0.5",
-    "serve-static": "^1.8.0"
+    "rimraf": "^2.3.2",
+    "serve-static": "^1.8.0",
+    "youtube-dl": "^1.10.2"
   },
   "devDependencies": {},
   "scripts": {
