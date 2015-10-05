@@ -124,3 +124,6 @@ These do no video processing, even if you include other options. They may help t
 
 ```
 
+### ascii2movie
+
+This doesn't work yet, perhaps I will make it work one day.
