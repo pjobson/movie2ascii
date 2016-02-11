@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/bin/env node
 
 // Required: jp2a, ffmpeg
 
@@ -118,17 +118,28 @@ var downloadMovie = function() {
 	ytdl.getInfo(global.movieURL, [], function(err, info) {
 		if (err) throw err;
 		global.movie = info._filename;
-		info.formats.forEach(function(fid) {
-			if (fid.ext !== 'mp4') return;
-			if (!fid.fps) return;
-			if (formatID===22) return;  // 22 is the best as of today
-			if (fid.format_id === '18' || fid.format_id === '22') {
-				formatID = fid.format_id;
+		var vidPixels = 0;
+		info.formats.forEach(function(format) {
+			if (format.vcodec==='none') return;
+			if (!format.height || !format.width) return;
+			if (format.ext !== 'mp4') return;
+			if (!format.fps) return;
+			format.format_id = parseInt(format.format_id,10);
+			var hw = format.width*format.height;
+			if (vidPixels < hw) {
+				vidPixels = hw;
+				formatID = format.format_id;
 			}
 		});
 
+		// If no video is found stop here.
+		if (formatID===0) {
+			console.log('Error: Could not find video file in the metadata.');
+			process.exit(code=0);
+		}
+
 		var video = ytdl(global.movieURL,
-			['--max-quality='+ formatID],
+			['--format='+ formatID],
 			{ cwd: __dirname }
 		);
 		video.on('info', function(info) {
