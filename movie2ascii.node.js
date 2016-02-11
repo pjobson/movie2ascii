@@ -121,9 +121,10 @@ var downloadMovie = function() {
 		var vidPixels = 0;
 		info.formats.forEach(function(format) {
 			if (format.vcodec==='none') return;
+			if (format.acodec==='none') return;
 			if (!format.height || !format.width) return;
 			if (format.ext !== 'mp4') return;
-			if (!format.fps) return;
+
 			format.format_id = parseInt(format.format_id,10);
 			var hw = format.width*format.height;
 			if (vidPixels < hw) {
@@ -138,16 +139,25 @@ var downloadMovie = function() {
 			process.exit(code=0);
 		}
 
+		var interval;
 		var video = ytdl(global.movieURL,
 			['--format='+ formatID],
 			{ cwd: __dirname }
 		);
+
 		video.on('info', function(info) {
 			console.log('\tDownload started');
 			console.log('\t\tFile size: ' + filesize(info.size));
+			interval = setInterval(function() {
+				process.stdout.write(global.waitChrs[Math.floor(Math.random() * 2)]);
+			},500);
 		});
+
+
 		video.pipe(fs.createWriteStream(global.movie));
 		video.on('end', function() {
+			clearInterval(interval);
+			console.log('');
 			console.log('\tVideo Downloaded');
 			probeVideo();
 		});
