@@ -70,8 +70,8 @@ var init = function() {
 
 	// Top Paths
 	global.path.top  = argv.path || argv.movie || 'test';
+	global.path.top  = global.path.top.replace(/\s+/g,'_').replace(/\/+$/,'').replace(/\.\w+$/,'');
 	global.path.top += '/';
-	global.path.top  = global.path.top.replace(/\.\w+$/,'').replace(/\/+$/,'/');
 
 	// Capability Options
 	global.info.fontlist  = argv.fontlist   || false;
