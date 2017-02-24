@@ -4,8 +4,8 @@
 
 var fs          = require('fs-extra');                        // http://nodejs.org/api/fs.html  &&  https://www.npmjs.com/package/fs-extra
 var art         = require('ascii-art');                       // https://github.com/khrome/ascii-art
-var jp2a        = require("jp2a");                            // https://github.com/lsvx/node-jp2a
-var ffmpeg      = require("fluent-ffmpeg");                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
+var jp2a        = require('jp2a');                            // https://github.com/lsvx/node-jp2a
+var ffmpeg      = require('fluent-ffmpeg');                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
 var argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
 var connect     = require('connect');                         // https://github.com/senchalabs/connect
 var serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
