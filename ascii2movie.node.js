@@ -1,101 +1,15 @@
 #!/bin/env node
 
+var os     = require('os');
 var fs     = require('fs');
 var spawn  = require('child_process').spawn;
-var zpad   = require('zpad');
+var Q      = require('q');                               // https://github.com/kriskowal/q
 var argv   = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
 var mime   = require('mime-types');                      // https://github.com/jshttp/mime-types
 var find   = require('find');                            // https://github.com/yuanchuan/find
 var mkdirp = require('mkdirp');                          // https://github.com/substack/node-mkdirp
 var rimraf = require('rimraf');                          // https://github.com/isaacs/rimraf
-
-var global = {
-	path: null,
-	info: {},
-	txtFiles: [],
-	handles: {},
-	font: {
-		family: 'CourierNew',
-		color: 'white',
-		background: 'black',
-		pointsize: '8'
-	}
-};
-
-// I was going about this the wrong way.
-// ImageMagick can gen an image from a file, 
-// there is no need to open each file and look at them.
-//
-// This recipe converts a text file to an image resizes 
-// convert -background black \
-//      -fill white \
-//      -font CourierNewB \ -- CourierNewB is Courier New Bold
-//      -pointsize 20 \
-//      -resize 1280x720 \
-//      -gravity center \
-//      -extent 1280x720 \
-//      label:@./img.0000000001.txt \
-//      img.0000000001.png
-
-// var init = function (){
-// 	global.txtpath         = argv.txtpath           || false;
-// 	global.mp3file         = argv.mp3file           || false;
-// 	global.title           = argv.title             || "ASCII Movie";
-// 	global.path            = './'+ global.title;
-// 	global.font.family     = argv.fontfamily        || global.font.family;
-// 	global.font.color      = argv.fontcolor         || global.font.color;
-// 	global.font.background = argv.backgroundcolor   || global.font.background;
-// 	global.font.size       = argv.fontsize          || global.font.size;
-// 	global.help            = argv.help              || false;
-
-// 	// Capability Options
-// 	global.info.fontlist  = argv.fontlist   || false;
-
-// 	if (global.info.fontlist || global.info.formats || global.info.codecs) {
-// 		info();
-// 	} else if (!argv.txtpath || !argv.mp3file || argv.help) {
-// 		usage();
-// 	} else {
-// 		startProcessing();
-// 	}
-// };
-
-var mp3filetest = function() {
-	var mp3mime = mime.lookup(global.mp3file);
-	if (mp3mime!=='audio/mpeg') {
-		console.log('Error: The specified MP3 file type is not audio/mpeg, most likely an invalid mp3 file.');
-		process.exit(code=0);
-	}
-}
-
-var info = function() {
-	// fontlist / formats / codecs
-	if (global.info.fontlist) {
-		console.log('Available fonts:');
-		var lst = spawn('convert',['-list','font']);
-		var fonts = '';
-		lst.stdout.on('data', function (data) {
-			fonts += data;
-		});
-		lst.on('close', function() {
-			var lstChr = '';
-			var thsChr = false;
-			fonts = fonts.replace(/   \w+:.+\n*/g,'').replace(/ +Font: /g,'').replace(/Path:.+\n/g,''); // Clean up stdout
-			fonts = fonts.trim().split(/\n/); // Trim & Split
-			fonts.forEach(function(name,idx,arr) {
-				if (!/[^\x00-\x7F]/.test(name) && !/^\./.test(name)) {
-					thsChr = name.substr(0,1).toUpperCase();
-					if (lstChr !== thsChr) {
-						console.log('\t------ '+ thsChr +' ------');
-					}
-					console.log("\t"+name);
-					lstChr = thsChr;
-				}
-			});
-			process.exit(code=0);
-		});
-	}
-};
+var im     = require('imagemagick');                     // https://github.com/rsms/node-imagemagick
 
 var resolutions = {
 	   '4k': '3840x2160',
@@ -105,6 +19,148 @@ var resolutions = {
 	 '360p': '480x360',
 	 '240p': '320x240',
 };
+
+var global = {
+	txtFileList: [],
+	tmppath: os.tmpdir()+'/ascii2movie',
+	font: {
+		family: 'CourierNewB',
+		color: 'white',
+		background: 'black',
+		rendersize: '720p'
+	}
+};
+
+var init = function (){
+	global.fontlist        = argv.fontlist   || false;
+	global.help            = argv.help       || false;
+	global.txtpath         = argv.txtpath    || false;
+	global.mp3file         = argv.mp3file    || false;
+	global.title           = argv.title      || "ASCII Movie";
+	global.font.family     = argv.fontfamily || global.font.family;
+	global.font.color      = argv.fontcolor  || global.font.color;
+	global.font.background = argv.background || global.font.background;
+	global.font.rendersize = argv.rendersize || global.font.rendersize;
+	global.font.rendersize = resolutions[global.font.rendersize.trim()];
+
+	if (global.fontlist) {
+		info();
+	} else if (!global.txtpath || !global.mp3file || argv.help) {
+		usage();
+	} else {
+		startProcessing();
+	}
+};
+
+var startProcessing = function() {
+	console.log('Started conversion.',global);
+	mktemp();
+	mp3filetest();
+	findTextFiles();
+};
+
+var mktemp = function() {
+	console.log('Making temp directory.');
+	mkdirp(global.tmppath, function (err) {
+		if (err) console.error(err)
+	});
+};
+
+var findTextFiles = function() {
+	console.log('Finding text files.');
+	find.eachfile(/\.txt$/,(global.txtpath), function(txt) {
+		global.txtFileList.push(txt);
+	}).end(function() {
+		console.log('Starting render.');
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+    	doRender();
+	});
+};
+
+var doRender = function() {
+	console.log('\tFrame: '+global.txtFileList.length);
+	renderFile().then(function() {
+		if (global.txtFileList.length>0) {
+			doRender();
+		}
+	});
+};
+
+var renderFile = function() {
+	// This recipe converts a text file to an image resizes 
+	// convert -background black \
+	//      -fill white \
+	//      -font CourierNewB \ -- CourierNewB is Courier New Bold
+	//      -pointsize 20 \
+	//      -resize 1280x720 \
+	//      -gravity center \
+	//      -extent 1280x720 \
+	//      label:@./img.0000000001.txt \
+	//      img.0000000001.png
+	var deferred = Q.defer();
+	var txtFile = global.txtFileList.pop();
+	var imgFile = global.tmppath+'/'+txtFile.split('/').pop().replace(/txt$/,'png');
+	im.convert([
+		'-background', global.font.background,
+		'-fill',       global.font.color,
+		'-pointsize',  '20',
+		'-resize',     global.font.rendersize,
+		'-gravity',    'center',
+		'-extent',     global.font.rendersize,
+		'label:@'+txtFile,
+		imgFile
+	], function(err, stdout) {
+		if (err) throw err;
+		deferred.resolve(stdout);
+	});
+	return deferred.promise;
+};
+
+var mp3filetest = function() {
+	console.log('Testing mp3 file.')
+	var mp3mime = mime.lookup(global.mp3file);
+	if (mp3mime!=='audio/mpeg') {
+		console.log('Error: The specified MP3 file type is not audio/mpeg, most likely an invalid mp3 file.');
+		process.exit(code=0);
+	}
+};
+
+var info = function() {
+	// fontlist
+	console.log('Available fonts:');
+	var lst = spawn('convert',['-list','font']);
+	var fonts = '';
+	lst.stdout.on('data', function (data) {
+		fonts += data;
+	});
+	lst.on('close', function() {
+		var lstChr = '';
+		var thsChr = false;
+		fonts = fonts.replace(/   \w+:.+\n*/g,'').replace(/ +Font: /g,'').replace(/Path:.+\n/g,''); // Clean up stdout
+		fonts = fonts.trim().split(/\n/); // Trim & Split
+		fonts.forEach(function(name,idx,arr) {
+			if (!/[^\x00-\x7F]/.test(name) && !/^\./.test(name)) {
+				thsChr = name.substr(0,1).toUpperCase();
+				if (lstChr !== thsChr) {
+					console.log('\t------ '+ thsChr +' ------');
+				}
+				console.log("\t"+name);
+				lstChr = thsChr;
+			}
+		});
+		process.exit(code=0);
+	});
+};
+
+
 var usage = function() {
 	console.log('Usage:');
 	console.log('	./ascii2movie.node.js --txtpath /path/to/txt/files/ --mp3file /path/to/mp3/file.mp3');
@@ -118,7 +174,7 @@ var usage = function() {
 	console.log('		Title of the movie, defaults to "ASCII Movie".');
 	console.log('	--txtpath /path/to/txt/files/');
 	console.log('		Name of the path with all of the text files.');
-	console.log('	--mp3path /path/to/mp3/file.mp3');
+	console.log('	--mp3file /path/to/mp3/file.mp3');
 	console.log('		Path to the mp3 file for this video.');
 	console.log('	--fontfamily name_of_font');
 	console.log('	  (optional)');
@@ -145,3 +201,5 @@ var usage = function() {
 	console.log('		Lists available fonts.');
 	process.exit(code=0);
 };
+
+init();
