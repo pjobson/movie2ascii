@@ -6,7 +6,6 @@
     "type": "git",
     "url": "https://github.com/pjobson/movie2ascii"
   },
-  "main": "tmc.node.js",
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
     "connect": "^3.3.4",
@@ -14,6 +13,7 @@
     "find": "^0.1.7",
     "fluent-ffmpeg": "^2.0.0-rc3",
     "fs-extra": "^0.14.0",
+    "imagemagick": "^0.1.3",
     "jp2a": "^0.2.0",
     "mime-types": "^2.0.10",
     "minimist": "^1.1.0",
