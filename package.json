@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
-    "child_process": "^1.0.2",
     "connect": "^3.3.4",
     "filesize": "^3.1.2",
     "find": "^0.1.7",
