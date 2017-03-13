@@ -210,8 +210,7 @@ var usage = function() {
 	console.log('	--fontfamily name_of_font');
 	console.log('	  (optional)');
 	console.log('		Name of the font to render the images in (you should use a fixed-width font for this).');
-	console.log('		The --fontlist option below lists available fonts.');
-	console.log('		Default: Courier New Bold (CourierNewB)');
+	console.log('		Default: Bitstream Vera Sans Mono (VeraMono.ttf)');
 	console.log('	--rendersize size_of_video');
 	console.log('	  (optional)');
 	console.log('		Size of video: 4k, 1080p, 720p, 480p, 360p, 240p');
