@@ -61,17 +61,32 @@ brew install jp2a ffmpeg nodejs
 
 Clone my repo somewhwere.
 
+```
+git clone git@github.com:pjobson/movie2ascii.git
+cd movie2ascii
+```
+
 Install node modules.
 
 ```
 npm install
 ```
 
+You can add movie2ascii to your path as such:
+
+```
+echo "${PWD}:\$PATH" >> ~/.bash_profile
+source ~/.bash_profile
+# OR #
+echo "${PWD}:\$PATH" >> ~/.bashrc
+source ~/.bashrc
+```
+
 ## Usage
 
 ```
 Usage:
-	node movie2ascii.node.js --movie name_of_movie.ext
+	movie2ascii.node.js --movie name_of_movie.ext
 
 Configuration Options:
 	--help
