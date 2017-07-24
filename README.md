@@ -35,13 +35,8 @@ https://csl.name/jp2a/
 If you've done any video processing you've probably used ffmpeg.  I use it here to strip a series of JPG files and an MP3 from
 the original movie.
 
-### figlet v2.2.5
-FIGlet is a program for making large letters out of ordinary text.
-
-http://www.figlet.org/
-
-### node.js v0.10.33
-My node-fu is pretty poor, I have a feeling that there is a better way to do some of this, but I don't care much.
+### node.js v8.2.x
+I recently rewrote this for v8.2.x with promise chains and other fancy crap.
 
 ## Install
 
@@ -49,17 +44,17 @@ My node-fu is pretty poor, I have a feeling that there is a better way to do som
 
 Ubuntu/Mint/Debian
 ```
-sudo apt-get jp2a ffmpeg figlet nodejs
+sudo apt-get jp2a ffmpeg nodejs
 ```
 Redhat/Fedora/Centos
 ```
-sudo yum install jp2a ffmpeg figlet nodejs
+sudo yum install jp2a ffmpeg nodejs
 ```
 OSX
 
 Install Homebrew - http://brew.sh/
 ```
-brew install jp2a ffmpeg figlet nodejs
+brew install jp2a ffmpeg nodejs
 ```
 
 ### movie2ascii
