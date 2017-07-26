@@ -3,10 +3,11 @@
 'use strict';
 
 // Required: jp2a, ffmpeg
-const fs          = require('fs');                              // https://nodejs.org/api/fs.html
+const fs          = require('fs-extra');                        // https://github.com/jprichardson/node-fs-extra
 const path        = require('path');                            // https://nodejs.org/docs/latest/api/path.html
 
 const mkdirp      = require('mkdirp');                          // https://github.com/substack/node-mkdirp
+const rimraf      = require('rimraf');                          // https://github.com/isaacs/rimraf
 const cp          = require('cp');                              // https://github.com/stephenmathieson/node-cp
 const Q           = require('q');                               // https://github.com/kriskowal/q
 const jp2a        = require('jp2a');                            // https://github.com/lsvx/node-jp2a
@@ -15,15 +16,20 @@ const figlet      = require('figlet');                          // https://githu
 const argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
 const connect     = require('connect');                         // https://github.com/senchalabs/connect
 const serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
-const open        = require('open');                            // https://github.com/jjrdn/node-open
+const open        = require('opn');                             // https://github.com/jjrdn/node-open
 const find        = require('find');                            // https://github.com/yuanchuan/find
 const ytdl        = require('youtube-dl');                      // https://github.com/fent/node-youtube-dl
 const filesize    = require('filesize');                        // https://github.com/avoidwork/filesize.js
 const which       = require('which');                           // https://github.com/npm/node-which
 const columnify   = require('columnify');                       // https://github.com/timoxley/columnify
+const targz       = require('targz');                           // https://github.com/miskun/targz
 
 let global = {
-	encoderCount: 5,
+	htmlTemplatePath: `${__dirname}/htmlTemplate`,
+	encoders: {
+		count: false,
+		finished: 0
+	},
 	errors: false,
 	fps: false,
 	path: {
@@ -44,6 +50,7 @@ let global = {
 	},
 	waitChrs: ['\u2058','\u2059'],
 	watermark: false,
+	gzip: false,
 	help: false,
 	font: 'Standard',
 	info: {
@@ -68,30 +75,30 @@ let global = {
 const initParser = () => {
 	Q.fcall(() => {
 		// General Config
-		global.movie             = argv.movie          || false;
-		global.movieURL          = argv.movieURL       || false;
-		global.watermark         = argv.watermark      || false;
-		global.htmlTitle         = global.watermark    || "ASCII Movie";
-		global.font              = argv.font           || global.font;
-		global.help              = argv.help           || false;
-		global.browserpreview    = argv.browserpreview || false;
-		global.encoderCount      = argv.encoderCount   || global.encoderCount;
+		global.movie             = argv.movie              || false;
+		global.movieURL          = argv.movieURL           || false;
+		global.watermark         = argv.watermark          || false;
+		global.htmlTitle         = global.watermark        || "ASCII Movie";
+		global.font              = argv.font               || global.font;
+		global.help              = argv.help               || false;
+		global.browserpreview    = argv.browserpreview     || false;
+		global.encoders.count    = argv.encoders           || 5; // Default encoders is 5
+		global.gzip              = argv.gzip               || false;
 
 		// ASCII Config
-		global.ascii.flipx       = argv.flipx          || global.ascii.flipx;
-		global.ascii.flipy       = argv.flipy          || global.ascii.flipy;
-		global.ascii.width       = argv.width          || global.ascii.width;
-		global.ascii.border      = argv.border         || global.ascii.border;
+		global.ascii.flipx       = argv.flipx              || global.ascii.flipx;
+		global.ascii.flipy       = argv.flipy              || global.ascii.flipy;
+		global.ascii.width       = argv.width              || global.ascii.width;
+		global.ascii.border      = argv.border             || global.ascii.border;
 
 		// Top Paths
-		global.path.top          = argv.path           || './ascii_movie';
-		global.path.top          = path.resolve(global.path.top.replace(/\s+/g,'_'));
+		global.path.top          = path.resolve(argv.path || './ascii_movie');
 
 		// Capability Options
-		global.info.fontlist     = argv.fontlist       || false;
-		global.info.fontsample   = argv.fontsample     || false;
-		global.info.formats      = argv.formats        || false;
-		global.info.codecs       = argv.codecs         || false;
+		global.info.fontlist     = argv.fontlist           || false;
+		global.info.fontsample   = argv.fontsample         || false;
+		global.info.formats      = argv.formats            || false;
+		global.info.codecs       = argv.codecs             || false;
 	})
 	.then(() => {
 		// Check for jp2a
@@ -174,31 +181,32 @@ const startProcessor = () => {
 const asciifyImages = () => {
 	console.log('\tASCII-ifing images.');
 	// Spinning up X encoders
-	for (var i=0;i<global.encoderCount;i++) {
+	for (var i=0;i<global.encoders.count;i++) {
 		asciifyAnImage();
 	}
 };
 
 const asciifyAnImage = () => {
 	if (global.jpegs.length===0) {
+		if (++global.encoders.finished === global.encoders.count) {
+			buildAssets();
+		}
 		return;
 	}
-	console.log(`\t\tImage #${global.jpegs.length}`);
+	let opts;
 	try {
-		let opts = [global.jpegs.pop(),`--width=${global.ascii.width}`];
+		opts = [global.jpegs.pop(),`--width=${global.ascii.width}`];
 		!global.ascii.flipx  || opts.push("--flipx");
 		!global.ascii.flipx  || opts.push("--flipx");
 		!global.ascii.flipy  || opts.push("--flipy");
 		!global.ascii.border || opts.push("--border");
+		jp2a(opts, (output) => {
+			watermarker(output, opts[0]);
+		});
 	} catch(er) {
 		// This will hit if we try to asciify the last image twice
 		return;
 	}
-	asciifyAnImage();
-	// jp2a(opts, (output) => {
-	// 	watermarker(output, opts[0]);
-	// });
-
 };
 
 const watermarker = (frame, jpgFileName) => {
@@ -234,36 +242,73 @@ const writeFile = (frame, jpgFileName) => {
 	// rename the jpg to text and put it in proper place
 	let txtFileName = jpgFileName.replace(/.+(img\.\d+)\.jpg/,'$1');
 	txtFileName = `${global.path.top}/${global.path.txt}/${txtFileName}.txt`;
-	fs.writeFile(fname, frame, () => {
+	fs.writeFile(txtFileName, frame, () => {
 		process.stdout.write(global.waitChrs[Math.floor(Math.random() * 2)]);
+		// Start another image.
+		asciifyAnImage();
 	});
 };
 
-
-/*
-
-var cleanUp = function() {
-	// delete old jpegs.
-	console.log('\tRemoving JPGs')
-	fs.remove((global.path.top+global.path.img), function() {
-		buildHTML();
-	});
+const buildAssets = () => {
+	console.log('\n\tBuilding Assets.');
+	Q.fcall(copyAssets)
+	.then(buildHTML)
+	.then(cleanUp)
+	.then(tarGzip)
+	.then(kickOffWebServer)
+	.catch( (errors) => {
+		console.log(errors);
+		process.exit();
+	})
+	.done(printDone);
 };
 
-var buildHTML = function() {
-	var htmlTemplatePath = __dirname +'/htmlTemplate/';
-	// Copy assets
-	console.log('\tCopying Assests');
-	find.eachfile(/.+/,htmlTemplatePath+'assets/', function(from) {
-		var to = global.path.top+global.path.ass+from.replace(/.+\/(.+?\.(\w+))$/,'$1');
-		fs.copy(from,to,function(err) {
-			if (err) throw err;
+const tarGzip = () => {
+	if (global.gzip) {
+		const deferred = Q.defer();
+		const gzipDest = path.resolve(`${global.path.top}/../${global.path.top.split('/').pop()}.tar.gz`);
+		console.log(`\tGzipping File to: ${gzipDest}`);
+		targz.compress({
+			src:  path.resolve(`${global.path.top}/..`),
+			dest: gzipDest,
+			tar: {
+				entries: [global.path.top.split('/').pop()]
+			}
+		}, function(err){
+			if(err) {
+				console.log(err);
+			}
+			deferred.resolve();
+		});
+		return deferred.promise;
+	} else {
+		return;
+	}
+};
+
+const cleanUp = () => {
+	const deferred = Q.defer();
+	console.log('\tCleaning Up.');
+	rimraf(`${global.path.top}/${global.path.tmp}`, {}, (err) => {
+		if (err) {
+			deferred.reject(err);
+		}
+		rimraf(`${global.path.top}/${global.path.img}`, {}, (err) => {
+			if (err) {
+				deferred.reject(err);
+			} else {
+				deferred.resolve();
+			}
 		});
 	});
+	return deferred.promise;
+};
 
+const buildHTML = () => {
+	const deferred = Q.defer();
 	// Build HTML Page
 	console.log('\tBuilding HTML Page');
-	fs.readFile(htmlTemplatePath+'index.html', { encoding: 'utf8' }, function (err, html) {
+	fs.readFile(`${global.htmlTemplatePath}/index.html`, { encoding: 'utf8' }, (err, html) => {
 		if (err) throw err;
 
 		html = html.replace(/__TITLE__/g,global.htmlTitle);
@@ -271,33 +316,64 @@ var buildHTML = function() {
 		html = html.replace(/__FPS__/g,global.fps);
 
 		console.log('\tSaving HTML');
-		fs.writeFile(global.path.top+'index.html', html, { encoding: 'utf8' }, function (err) {
-			console.log("\tDone Writing");
-			console.log("Your files are here: "+ global.path.top);
-			kickOffWebServer();
+		fs.writeFile(`${global.path.top}/index.html`, html, { encoding: 'utf8' }, (err) => {
+			if (err) {
+				deferred.reject(err);
+				return;
+			}
+			console.log("\tDone Writing.");
+			console.log(`\tYour files are here: ${global.path.top}`);
+			deferred.resolve();
 		});
 	});
+	return deferred.promise;
 };
 
-var printDone = function() {
-	console.log('DONE ASCIIFICATION');
+const copyAssets = () => {
+	const deferred = Q.defer();
+	let fileFrom, fileTo, idx, arr;
+	// Copy assets
+	console.log('\tCopying Assests');
+	// Find all files in the HTML Template Path
+	find.fileSync(/.+/,`${global.htmlTemplatePath}/assets/`).forEach((fileFrom,idx,arr) => {
+		fileTo = `${global.path.top}/${global.path.ass}/${fileFrom.replace(/.+\/(.+?\.(\w+))$/,'$1')}`;
+		// Blocking Copy
+		try {
+			fs.copySync(fileFrom, fileTo);
+		} catch (err) {
+			deferred.reject(err);
+			return;
+		}
+		// If last, resolve promise
+		if (idx+1 === arr.length) {
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
 };
 
-var kickOffWebServer = function() {
+// Kicks off a webserver if requested
+const kickOffWebServer = () => {
+	const deferred = Q.defer();
 	if (global.browserpreview) {
 		// Kicks off web server on port 8989 and opens a browser.
-		connect().use(serveStatic(global.path.top)).listen(8989);
+		let app = connect();
+		app.use(serveStatic(global.path.top)).listen(8989);
 		console.log("Serving movie at: http://localhost:8989/");
 		console.log("CTRL+C to quit");
 		open('http://localhost:8989/');
 	} else {
-		printDone();
+		deferred.resolve();
 	}
+	return deferred.promise;
 };
 
-
-
-*/
+// Just prints finished.
+const printDone = () => {
+	console.log('DONE ASCIIFICATION');
+	process.exit();
+};
 
 const makePaths = () => {
 	const deferred = Q.defer();
@@ -446,7 +522,7 @@ const ripAudio = () => {
 			console.log('\tRipping MP3.')
 		})
 		.on('end', () => {
-			console.log('\tFinished ripping MP3s.');
+			console.log('\tFinished ripping audio.');
 			deferred.resolve();
 		})
 		.on('progress', (progress) => {
@@ -465,10 +541,10 @@ const ripVideo = () => {
 		.fps(global.fps)
 		.output(`${global.path.top}/${global.path.img}/img.%10d.jpg`)
 		.on('start', () => {
-			console.log('\tRipping JPGs.')
+			console.log('\tRipping jpegs.')
 		})
 		.on('end', () => {
-			console.log('\tFinished ripping JPGs.');
+			console.log('\tFinished ripping jpegs.');
 			deferred.resolve();
 		})
 		.on('progress', (progress) => {
@@ -567,7 +643,7 @@ const usage = (deferred) => {
     --codecs
       (optional) Lists available video codecs.
 
-    --fontsample=Standard
+    --fontsample Standard
       (optional) Shows a sample of the requested font.
   `);
   return deferred.resolve();
