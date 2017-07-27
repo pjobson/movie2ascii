@@ -2,27 +2,26 @@
 
 'use strict';
 
-// Required: jp2a, ffmpeg
-const fs          = require('fs-extra');                        // https://github.com/jprichardson/node-fs-extra
-const path        = require('path');                            // https://nodejs.org/docs/latest/api/path.html
-
-const mkdirp      = require('mkdirp');                          // https://github.com/substack/node-mkdirp
-const rimraf      = require('rimraf');                          // https://github.com/isaacs/rimraf
+// Required jp2a & ffmpeg binaries.
+const argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
+const columnify   = require('columnify');                       // https://github.com/timoxley/columnify
+const connect     = require('connect');                         // https://github.com/senchalabs/connect
 const cp          = require('cp');                              // https://github.com/stephenmathieson/node-cp
-const Q           = require('q');                               // https://github.com/kriskowal/q
-const jp2a        = require('jp2a');                            // https://github.com/lsvx/node-jp2a
 const ffmpeg      = require('fluent-ffmpeg');                   // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
 const figlet      = require('figlet');                          // https://github.com/patorjk/figlet.js
-const argv        = require('minimist')(process.argv.slice(2)); // https://github.com/substack/minimist
-const connect     = require('connect');                         // https://github.com/senchalabs/connect
-const serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
-const open        = require('opn');                             // https://github.com/jjrdn/node-open
-const find        = require('find');                            // https://github.com/yuanchuan/find
-const ytdl        = require('youtube-dl');                      // https://github.com/fent/node-youtube-dl
 const filesize    = require('filesize');                        // https://github.com/avoidwork/filesize.js
-const which       = require('which');                           // https://github.com/npm/node-which
-const columnify   = require('columnify');                       // https://github.com/timoxley/columnify
+const find        = require('find');                            // https://github.com/yuanchuan/find
+const fs          = require('fs-extra');                        // https://github.com/jprichardson/node-fs-extra
+const jp2a        = require('jp2a');                            // https://github.com/lsvx/node-jp2a
+const mkdirp      = require('mkdirp');                          // https://github.com/substack/node-mkdirp
+const open        = require('opn');                             // https://github.com/jjrdn/node-open
+const path        = require('path');                            // https://nodejs.org/docs/latest/api/path.html
+const Q           = require('q');                               // https://github.com/kriskowal/q
+const rimraf      = require('rimraf');                          // https://github.com/isaacs/rimraf
+const serveStatic = require('serve-static');                    // https://github.com/expressjs/serve-static
 const targz       = require('targz');                           // https://github.com/miskun/targz
+const which       = require('which');                           // https://github.com/npm/node-which
+const ytdl        = require('youtube-dl');                      // https://github.com/fent/node-youtube-dl
 
 let global = {
 	htmlTemplatePath: `${__dirname}/htmlTemplate`,
@@ -50,6 +49,7 @@ let global = {
 	},
 	waitChrs: ['\u2058','\u2059'],
 	watermark: false,
+	watermarkTime: false,
 	gzip: false,
 	help: false,
 	font: 'Standard',
@@ -72,12 +72,20 @@ let global = {
 	jpegs:          []
 };
 
-const initParser = () => {
+/*
+	initParserChain()
+	Initial promise chain.
+	* Sets up global variables based on argument values
+	* Looks for jp2a and ffmpeg binaries in the path
+	* Checks for errors and kicks off help and info methods.
+*/
+const initParserChain = () => {
 	Q.fcall(() => {
 		// General Config
 		global.movie             = argv.movie              || false;
 		global.movieURL          = argv.movieURL           || false;
 		global.watermark         = argv.watermark          || false;
+		global.watermarkTime     = argv.watermarkTime      || false;
 		global.htmlTitle         = global.watermark        || "ASCII Movie";
 		global.font              = argv.font               || global.font;
 		global.help              = argv.help               || false;
@@ -101,7 +109,7 @@ const initParser = () => {
 		global.info.codecs       = argv.codecs             || false;
 	})
 	.then(() => {
-		// Check for jp2a
+		// Check for jp2a binary
 		let deferred = Q.defer();
 		which('jp2a', (error, resolvedPath) => {
 			global.execInPath.jp2a = (!!resolvedPath);
@@ -110,7 +118,7 @@ const initParser = () => {
 		return deferred.promise;
 	})
 	.then(() => {
-		// Check for ffmpeg
+		// Check for ffmpeg binary
 		let deferred = Q.defer();
 		which('ffmpeg', (error, resolvedPath) => {
 			global.execInPath.ffmpeg = (!!resolvedPath);
@@ -123,42 +131,31 @@ const initParser = () => {
 		console.log(errors);
 	})
 	.done(() => {
+		// Exit process if error.
 		if (global.errors) {
 			process.exit();
 		}
-		startProcessor();
+		startProcessorChain();
 	});
-
 };
 
-const checkForErrors = () => {
-	let deferred = Q.defer();
-	if (global.info.fontlist || global.info.formats || global.info.codecs || global.info.fontsample) {
-		global.errors = true;
-		showInfoPage(deferred);
-	} else if (argv.help) {
-		global.errors = true;
-		usage(deferred);
-	} else if (global.movie === false && global.movieURL === false) {
-		global.errors = true;
-		usage(deferred);
-	} else if (global.movie !== false && global.movieURL !== false) {
-		global.errors = true;
-		usage(deferred);
-	} else {
-		deferred.resolve();
-	}
-	return deferred.promise;
-};
-
-const startProcessor = () => {
+/*
+	startProcessorChain()
+	Promise chain for initial processing.
+	* Renders watermark if requested
+	* Makes paths
+	* downloads movie if download requested
+	* copies movie if local movie requested
+	* probes the video
+	* rips the audio's mp3 track
+	* rips the video to a series of JPG files
+	* starts the asciification process
+*/
+const startProcessorChain = () => {
 	Q.fcall(() => {
 		console.log('ASCIIFICATION STARTED');
-		// Render the FIGlet
-		if (global.watermark) {
-			renderFIGlet();
-		}
 	})
+	.then(renderFIGlet)
 	.then(makePaths)
 	.then(downloadMovie)
 	.then(copyMovie)
@@ -166,18 +163,70 @@ const startProcessor = () => {
 	.then(ripAudio)
 	.then(ripVideo)
 	.then(findJpegs)
-	.catch( (errors) => {
+	.catch((errors) => {
 		console.log(errors);
 		process.exit();
 	})
 	.done(asciifyImages);
 };
 
-// 	let deferred = Q.defer();
-//  deferred.resolve();
-//  deferred.reject('msg');
-// 	return deferred.promise;
+/*
+	buildAssetsChain()
+	This is for building the HTML and JS assets.
+	* Copies the assets to the path
+	* Cleans up garbage
+	* Gzips the directory if requested
+	* kicks off a web server if requested
+	* prints done.
+*/
+const buildAssetsChain = () => {
+	console.log('\n\tBuilding Assets.');
+	Q.fcall(copyAssets)
+	.then(buildHTML)
+	.then(cleanUp)
+	.then(tarGzip)
+	.then(kickOffWebServer)
+	.catch( (errors) => {
+		console.log(errors);
+		process.exit();
+	})
+	.done(printDone);
+};
 
+/*
+	checkForErrors()
+	Error checker and help display
+	* Informational items also trigger "error" to exit out.
+*/
+const checkForErrors = () => {
+	let deferred = Q.defer();
+	if (global.info.fontlist || global.info.formats || global.info.codecs || global.info.fontsample) {
+		// If font list, formats, codecs, or fontsample was requested display.
+		global.errors = true;
+		showInfoPage(deferred);
+	} else if (argv.help) {
+		// If help, show help.
+		global.errors = true;
+		usage(deferred);
+	} else if (global.movie === false && global.movieURL === false) {
+		// If user did not set movie or movieURL, throw error.
+		global.errors = true;
+		usage(deferred);
+	} else if (global.movie !== false && global.movieURL !== false) {
+		// If user set both movie and movieURL, throw error.
+		global.errors = true;
+		usage(deferred);
+	} else {
+		// Otherwise jsut resolve.
+		deferred.resolve();
+	}
+	return deferred.promise;
+};
+
+/*
+	asciifyImages()
+	This spawns ## of processors based on user input or 5 by default.
+*/
 const asciifyImages = () => {
 	console.log('\tASCII-ifing images.');
 	// Spinning up X encoders
@@ -186,10 +235,15 @@ const asciifyImages = () => {
 	}
 };
 
+/*
+	asciifyAnImage()
+	This kicks off jp2a to convert a single image to text.
+*/
 const asciifyAnImage = () => {
+	// If we're out of images AND all of the encoders are finished, build the HTML/js assets.
 	if (global.jpegs.length===0) {
 		if (++global.encoders.finished === global.encoders.count) {
-			buildAssets();
+			buildAssetsChain();
 		}
 		return;
 	}
@@ -209,6 +263,16 @@ const asciifyAnImage = () => {
 	}
 };
 
+/*
+	watermarker()
+	This puts the watermark into each of the frames
+	+-------------------+
+	|                   |
+	|                   |
+	|                   |
+	|         WATERMARK |
+	+-------------------+
+*/
 const watermarker = (frame, jpgFileName) => {
 	if (global.watermark !== false) {
 		frame = frame.split(/\n/);
@@ -238,6 +302,10 @@ const watermarker = (frame, jpgFileName) => {
 	writeFile(frame, jpgFileName);
 };
 
+/*
+	writeFile()
+	Writes a frame to disk.
+*/
 const writeFile = (frame, jpgFileName) => {
 	// rename the jpg to text and put it in proper place
 	let txtFileName = jpgFileName.replace(/.+(img\.\d+)\.jpg/,'$1');
@@ -249,20 +317,10 @@ const writeFile = (frame, jpgFileName) => {
 	});
 };
 
-const buildAssets = () => {
-	console.log('\n\tBuilding Assets.');
-	Q.fcall(copyAssets)
-	.then(buildHTML)
-	.then(cleanUp)
-	.then(tarGzip)
-	.then(kickOffWebServer)
-	.catch( (errors) => {
-		console.log(errors);
-		process.exit();
-	})
-	.done(printDone);
-};
-
+/*
+	tarGzip()
+	Compresses the output directory
+*/
 const tarGzip = () => {
 	if (global.gzip) {
 		const deferred = Q.defer();
@@ -274,7 +332,7 @@ const tarGzip = () => {
 			tar: {
 				entries: [global.path.top.split('/').pop()]
 			}
-		}, function(err){
+		}, (err) => {
 			if(err) {
 				console.log(err);
 			}
@@ -286,6 +344,10 @@ const tarGzip = () => {
 	}
 };
 
+/*
+	cleanUp()
+	Deletes the temp and image paths
+*/
 const cleanUp = () => {
 	const deferred = Q.defer();
 	console.log('\tCleaning Up.');
@@ -304,6 +366,10 @@ const cleanUp = () => {
 	return deferred.promise;
 };
 
+/*
+	buildHTML()
+	Builds the HTML and JS files with the specifications from this run
+*/
 const buildHTML = () => {
 	const deferred = Q.defer();
 	// Build HTML Page
@@ -329,6 +395,10 @@ const buildHTML = () => {
 	return deferred.promise;
 };
 
+/*
+	copyAssets()
+	Copies the HTML and JS assets to the working directory.
+*/
 const copyAssets = () => {
 	const deferred = Q.defer();
 	let fileFrom, fileTo, idx, arr;
@@ -353,7 +423,10 @@ const copyAssets = () => {
 	return deferred.promise;
 };
 
-// Kicks off a webserver if requested
+/*
+	kickOffWebServer()
+	Kicks off a web server on local so user can view the movie.
+*/
 const kickOffWebServer = () => {
 	const deferred = Q.defer();
 	if (global.browserpreview) {
@@ -369,24 +442,40 @@ const kickOffWebServer = () => {
 	return deferred.promise;
 };
 
-// Just prints finished.
+/*
+	printDone()
+	Just prints finished and exits.
+*/
 const printDone = () => {
 	console.log('DONE ASCIIFICATION');
 	process.exit();
 };
-
+/*
+	makePaths()
+	Makes several paths, mkdirp automatically makes the full path as: mkdir -p
+	* top path - user specified or ascii_movie
+	* mp3 - mp3 path
+	* img - image temp path
+	* txt - text files path
+	* ass - assets path
+	* tmp - temp path
+*/
 const makePaths = () => {
 	const deferred = Q.defer();
 	console.log("\tMaking directories.");
-	mkdirp.sync(`${global.path.top}/${global.path.mp3}`); // mp3 path
-	mkdirp.sync(`${global.path.top}/${global.path.img}`); // image path
-	mkdirp.sync(`${global.path.top}/${global.path.txt}`); // text files path
-	mkdirp.sync(`${global.path.top}/${global.path.ass}`); // assets path
-	mkdirp.sync(`${global.path.top}/${global.path.tmp}`); // temp path
+	mkdirp.sync(`${global.path.top}/${global.path.mp3}`);
+	mkdirp.sync(`${global.path.top}/${global.path.img}`);
+	mkdirp.sync(`${global.path.top}/${global.path.txt}`);
+	mkdirp.sync(`${global.path.top}/${global.path.ass}`);
+	mkdirp.sync(`${global.path.top}/${global.path.tmp}`);
 	deferred.resolve();
 	return deferred.promise;
 };
 
+/*
+	copyMovie()
+	This copies the movie from wherever the user specified to the temp path.
+*/
 const copyMovie = () => {
 	const deferred = Q.defer();
 	if (!!global.movieURL) {
@@ -403,6 +492,10 @@ const copyMovie = () => {
 	return deferred.promise;
 };
 
+/*
+	downloadMovie()
+	Downloads the movie from youtube or anywhere ytld can get from
+*/
 const downloadMovie = () => {
 	let deferred = Q.defer();
 
@@ -415,6 +508,7 @@ const downloadMovie = () => {
 	global.movieURL = global.movieURL.replace(/https:/,'http:');
 	let formatID = 0;
 
+	// Gets the movie info.
 	ytdl.getInfo(global.movieURL, [], (err, info) => {
 		console.log('\tGetting video info.');
 		if (err) {
@@ -423,6 +517,7 @@ const downloadMovie = () => {
 		global.movie = `${global.path.top}/${global.path.tmp}/${info._filename}`;
 
 		let vidPixels = 0;
+		// I'm looking for an MP4 movie with audio.
 		info.formats.forEach((format) => {
 			// if no video codec
 			if (format.vcodec==='none') return;
@@ -434,6 +529,9 @@ const downloadMovie = () => {
 			if (format.ext !== 'mp4') return;
 
 			format.format_id = parseInt(format.format_id,10);
+			// hw is video height * video width
+			// This will let me determine if this video is larger or smaller than the next one I look at
+			// I want to work with the largest video possible
 			let hw = format.width*format.height;
 			if (vidPixels < hw) {
 				vidPixels = hw;
@@ -447,15 +545,19 @@ const downloadMovie = () => {
 		}
 
 		let interval;
+		// Get the video with the format id of the largest one we looked at in the info check above.
 		let video = ytdl(global.movieURL,
 			['--format='+ formatID],
 			{ cwd: __dirname }
 		);
 
+		// If error reject
 		video.on('error', (error) => {
 			deferred.reject(error);
 		});
 
+		// On info during download show the download started message and file size.
+		// Kick off a series of wait characters so user can tell something is happening.
 		video.on('info', (info) => {
 			console.log('\tDownload started');
 			console.log('\t\tFile size: ' + filesize(info.size));
@@ -464,8 +566,10 @@ const downloadMovie = () => {
 			},500);
 		});
 
+		// Pipe downlaod to save to disk.
 		video.pipe(fs.createWriteStream(`${global.movie}`));
 
+		// On end, display finished message and resolve.
 		video.on('end', () => {
 			clearInterval(interval);
 			console.log('');
@@ -476,8 +580,12 @@ const downloadMovie = () => {
 	return deferred.promise;
 };
 
-
-
+/*
+	probeVideo()
+	Probe the video for information.
+	* FPS
+	* Has a video stream
+*/
 const probeVideo = () => {
 	// Probe video.
 	let deferred = Q.defer();
@@ -507,6 +615,10 @@ const probeVideo = () => {
 	return deferred.promise;
 };
 
+/*
+	ripAudio()
+	Rip an mp3 stream from the video.
+*/
 const ripAudio = () => {
 	let deferred = Q.defer();
 
@@ -533,6 +645,10 @@ const ripAudio = () => {
 	return deferred.promise;
 };
 
+/*
+	ripVideo()
+	Rip JPGs at global.fps usually 20.
+*/
 const ripVideo = () => {
 	let deferred = Q.defer();
 
@@ -555,20 +671,36 @@ const ripVideo = () => {
 	return deferred.promise;
 };
 
+/*
+	renderFIGlet()
+	Renders the watermark
+*/
 const renderFIGlet = () => {
-	// render watermark
-	console.log('\tRendering watermark.');
-	figlet.text(global.watermark, {
-		font: global.font
-	}, (err, data) => {
-		if (err) {
-			return;
-		}
-		global.watermark = data.split(/\n/);
+	if (global.watermark) {
+		// render watermark
+		let deferred = Q.defer();
+		console.log('\tRendering watermark.');
+		figlet.text(global.watermark, {
+			font: global.font
+		}, (err, data) => {
+			if (err) {
+				deferred.reject('Could not render watermark');
+			} else {
+				data = data.replace(/[\s\r\n\t]+$/,''); // Remove extra white space from end of data
+				global.watermark = data.split(/\n/);
+				deferred.resolve();
+			}
+		});
+		return deferred.promise;
+	} else {
 		return;
-	});
+	}
 };
 
+/*
+	findJpegs()
+	Finds the jpeg files which were ripped.
+*/
 const findJpegs = () => {
 	let deferred = Q.defer();
 
@@ -583,6 +715,10 @@ const findJpegs = () => {
 	return deferred.promise;
 };
 
+/*
+	usage()
+	Usage messages.
+*/
 const usage = (deferred) => {
   console.log(`
   Usage:
@@ -600,17 +736,23 @@ const usage = (deferred) => {
       (optional) Automatically stands up server and opens browser when done.
 
     --movie whatever_movie.ext
-      Name of your movie file.
+      (optional/required) Name of your movie file, use this instead of --movieURL.
+      Either --movie or --movieURL is required.
       To see what your install of ffmpeg supports use: --formats
 
-    --movieURL https://www.youtube.com/watch?v=SOME_VIDEO_ID
-      (optional) URL of video, use this instead of --movie.
+    --movieURL http://www.youtube.com/watch?v=SOME_VIDEO_ID
+      (optional/required) URL of video, use this instead of --movie.
+      Either --movie or --movieURL is required.
 
     --path /path/to/output/to/
       (optional) Name of path to build to, creates path based on movie file name by default.
 
     --watermark "Some Text"
       (optional) Watermarks the bottom of the image.
+
+    --watermarkTime ##
+      (optional) Amount of time watermark should be displayed.
+      ** NOT IMPLEMENTED YET **
 
     --font name_of_font
       (optional) Watermarks the bottom of the image.
@@ -649,6 +791,10 @@ const usage = (deferred) => {
   return deferred.resolve();
 };
 
+/*
+	showInfoPage()
+	Displays various info pages.
+*/
 const showInfoPage = (deferred) => {
 	// { fontlist: true/false, formats: true/false, codecs: true/false }
 	if (global.info.fontsample) {
@@ -714,4 +860,4 @@ const showInfoPage = (deferred) => {
 };
 
 // DOO EET!
-initParser();
+initParserChain();
