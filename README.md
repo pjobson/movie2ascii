@@ -35,13 +35,8 @@ https://csl.name/jp2a/
 If you've done any video processing you've probably used ffmpeg.  I use it here to strip a series of JPG files and an MP3 from
 the original movie.
 
-### figlet v2.2.5
-FIGlet is a program for making large letters out of ordinary text.
-
-http://www.figlet.org/
-
-### node.js v0.10.33
-My node-fu is pretty poor, I have a feeling that there is a better way to do some of this, but I don't care much.
+### node.js v8.2.x
+I recently rewrote this for v8.2.x with promise chains and other fancy crap.
 
 ## Install
 
@@ -49,17 +44,17 @@ My node-fu is pretty poor, I have a feeling that there is a better way to do som
 
 Ubuntu/Mint/Debian
 ```
-sudo apt-get jp2a ffmpeg figlet nodejs
+sudo apt-get jp2a ffmpeg nodejs
 ```
 Redhat/Fedora/Centos
 ```
-sudo yum install jp2a ffmpeg figlet nodejs
+sudo yum install jp2a ffmpeg nodejs
 ```
 OSX
 
 Install Homebrew - http://brew.sh/
 ```
-brew install jp2a ffmpeg figlet nodejs
+brew install jp2a ffmpeg nodejs
 ```
 
 ### movie2ascii
@@ -90,58 +85,72 @@ source ~/.bashrc
 ## Usage
 
 ```
-Usage:
-	movie2ascii.node.js --movie name_of_movie.ext
+  Usage:
 
-Configuration Options:
-	--help
-	  (optional)
-		Shows this page.
-	--browserpreview
-	  (optional)
-		Automatically stands up server and opens browser when done.
-	--movie whatever_movie.ext
-		Name of your movie file.
-		To see what your install of ffmpeg supports use: ffmpeg -formats
-	--movieURL https://www.youtube.com/watch?v=SOME_VIDEO_ID
-	  (optional)
-		URL of video, use this instead of --movie.
-	--path /path/to/output/to/
-	  (optional)
-		Name of path to build to, creates path based on movie file name by default.
-	--watermark "Some Text"
-	  (optional)
-		Watermarks the bottom of the image.
-	--font name_of_font
-	  (optional)
-		Watermarks the bottom of the image.
+       ./movie2ascii.node.js --movie name_of_movie.ext
 
-ASCII Options:
-	--border
-	  (optional)
-		Use to add a border to the ASCII.
-	--flipx
-	  (optional)
-		Flip X Axis.
-	--flipy
-	  (optional)
-		Flip Y Axis.
-	--width
-	  (optional)
-		Number of characters in width, scales height automagically.
+  General:
 
-Capability Options:
-These do no video processing, even if you include other options. They may help to determine issues.
-	--fontlist
-	  (optional)
-		Lists available fonts.
-	--formats
-	  (optional)
-		Lists available video formats.
-	--codecs
-	  (optional)
-		Lists available video codecs.
+    --help
+      (optional) Shows this page.
 
+  Configuration Options:
+
+    --browserpreview
+      (optional) Automatically stands up server and opens browser when done.
+
+    --movie whatever_movie.ext
+      (optional/required) Name of your movie file, use this instead of --movieURL.
+      Either --movie or --movieURL is required.
+      To see what your install of ffmpeg supports use: --formats
+
+    --movieURL http://www.youtube.com/watch?v=SOME_VIDEO_ID
+      (optional/required) URL of video, use this instead of --movie.
+      Either --movie or --movieURL is required.
+
+    --path /path/to/output/to/
+      (optional) Name of path to build to, creates path based on movie file name by default.
+
+    --watermark "Some Text"
+      (optional) Watermarks the bottom of the image.
+
+    --watermarkTime ##
+      (optional) Amount of time watermark should be displayed.
+      ** NOT IMPLEMENTED YET **
+
+    --font name_of_font
+      (optional) Watermarks the bottom of the image.
+
+
+  ASCII Options:
+
+    --border
+      (optional) Use to add a border to the ASCII.
+
+    --flipx
+      (optional) Flip X Axis.
+
+    --flipy
+      (optional) Flip Y Axis.
+
+    --width
+      (optional) Number of characters in width, scales height automagically, default: 180.
+
+
+  Capability Options:
+  These do no video processing, even if you include other options. They may help to determine issues.
+
+    --fontlist
+      (optional) Lists available fonts.
+
+    --formats
+      (optional) Lists available video formats.
+
+    --codecs
+      (optional) Lists available video codecs.
+
+    --fontsample Standard
+      (optional) Shows a sample of the requested font from fontlist.
 ```
 
 ### ascii2movie

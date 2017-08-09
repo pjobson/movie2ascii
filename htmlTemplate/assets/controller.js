@@ -37,7 +37,7 @@ var prefetcher = function() {
 		var percent = Math.floor((framePrefetchCount/counter.last)*100);
 		bufferingMsgUpdate(percent);
 
-		if (percent >= 33) {
+		if (percent >= 15) {
 			$('#player').show();
 		}
 
