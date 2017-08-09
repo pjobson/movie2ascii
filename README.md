@@ -121,6 +121,9 @@ source ~/.bashrc
     --font name_of_font
       (optional) Watermarks the bottom of the image.
 
+    --gzip
+      (optional) Gzips the output.
+
 
   ASCII Options:
 

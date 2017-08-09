@@ -90,7 +90,7 @@ const initParserChain = () => {
 		global.font              = argv.font               || global.font;
 		global.help              = argv.help               || false;
 		global.browserpreview    = argv.browserpreview     || false;
-		global.encoders.count    = argv.encoders           || 5; // Default encoders is 5
+		global.encoders.count    = argv.encoders           || 10; // Default encoders is 10
 		global.gzip              = argv.gzip               || false;
 
 		// ASCII Config
@@ -686,7 +686,7 @@ const renderFIGlet = () => {
 			if (err) {
 				deferred.reject('Could not render watermark');
 			} else {
-				data = data.replace(/[\s\r\n\t]+$/,''); // Remove extra white space from end of data
+				data = data.replace(/\r\n]+$/,'\n'); // Remove extra white space from end of data
 				global.watermark = data.split(/\n/);
 				deferred.resolve();
 			}
@@ -756,6 +756,9 @@ const usage = (deferred) => {
 
     --font name_of_font
       (optional) Watermarks the bottom of the image.
+
+    --gzip
+      (optional) Gzips the output.
 
 
   ASCII Options:
