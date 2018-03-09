@@ -82,6 +82,12 @@ echo "${PWD}:\$PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
 
+You can symlink movie2ascii to your node bin as such, assuming your `NODE_PATH` is set in your profile.
+
+```
+ln -fs ${PWD}/movie2ascii.node.js ${NODE_PATH}/movie2ascii
+```
+
 ## Usage
 
 ```
