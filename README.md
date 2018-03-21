@@ -75,10 +75,12 @@ npm install
 You can add movie2ascii to your path as such:
 
 ```
-echo "${PWD}:\$PATH" >> ~/.bash_profile
+echo "export PATH=${PWD}:\$PATH" >> ~/.bashrc
 source ~/.bash_profile
+
 # OR #
-echo "${PWD}:\$PATH" >> ~/.bashrc
+
+echo "export PATH=${PWD}:\$PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
 
