@@ -1,6 +1,8 @@
 #!/bin/bash
 
+echo "==============================================="
 echo "Looking for requirements jp2a/ffmpeg/ffprobe..."
+echo "==============================================="
 
 # JP2A Test
 whichjp2a=$(which jp2a)
@@ -40,3 +42,5 @@ if ! [ -x "$whichffprobe" ] ; then
 else
 	echo "  Found ffprobe: $whichffprobe"
 fi
+
+echo "==============================================="
