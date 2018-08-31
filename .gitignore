@@ -29,9 +29,9 @@ node_modules
 
 # Test directories
 test_movies
+ascii_movie
 
 # Files from vi
 *~
 *.swp
 *.swo
-
