@@ -44,17 +44,17 @@ I recently rewrote this for v8.2.x with promise chains and other fancy crap.
 
 Ubuntu/Mint/Debian
 ```
-sudo apt-get jp2a ffmpeg nodejs
+sudo apt-get jp2a ffmpeg nodejs git
 ```
 Redhat/Fedora/Centos
 ```
-sudo yum install jp2a ffmpeg nodejs
+sudo yum install jp2a ffmpeg nodejs git
 ```
 OSX
 
 Install Homebrew - http://brew.sh/
 ```
-brew install jp2a ffmpeg nodejs
+brew install jp2a ffmpeg nodejs git
 ```
 
 ### movie2ascii
@@ -66,28 +66,10 @@ git clone git@github.com:pjobson/movie2ascii.git
 cd movie2ascii
 ```
 
-Install node modules.
+Install node modules and movie2ascii binary.
 
 ```
-npm install
-```
-
-You can add movie2ascii to your path as such:
-
-```
-echo "export PATH=${PWD}:\$PATH" >> ~/.bashrc
-source ~/.bash_profile
-
-# OR #
-
-echo "export PATH=${PWD}:\$PATH" >> ~/.bashrc
-source ~/.bashrc
-```
-
-You can symlink movie2ascii to your node bin as such, assuming your `NODE_PATH` is set in your profile.
-
-```
-ln -fs ${PWD}/movie2ascii.node.js ${NODE_PATH}/movie2ascii
+npm install -g
 ```
 
 ## Usage
@@ -95,7 +77,7 @@ ln -fs ${PWD}/movie2ascii.node.js ${NODE_PATH}/movie2ascii
 ```
   Usage:
 
-       ./movie2ascii.node.js --movie name_of_movie.ext
+       movie2ascii --movie name_of_movie.ext
 
   General:
 
