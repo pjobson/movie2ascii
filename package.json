@@ -33,6 +33,9 @@
   "scripts": {
     "postinstall": "bash bin_test.sh"
   },
+  "bin": {
+    "movie2ascii": "./movie2ascii.node.js"
+  },
   "author": {
     "name": "Paul Jobson",
     "email": "pjobson@gmail.com",
