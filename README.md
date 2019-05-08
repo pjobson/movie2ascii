@@ -26,16 +26,19 @@ http://pjobson.github.io/movie2ascii
 ## Requrirements
 
 ### jp2a v1.0.6
+
 The awesome Christian Stigen Larsen created this cool program to convert JPG files to ASCII, without it I probably would
 never have been able to make this mess.
 
 https://csl.name/jp2a/
 
 ### ffmpeg v2.5
+
 If you've done any video processing you've probably used ffmpeg.  I use it here to strip a series of JPG files and an MP3 from
 the original movie.
 
 ### node.js v8.2.x
+
 I recently rewrote this for v8.2.x with promise chains and other fancy crap.
 
 ## Install
@@ -44,17 +47,17 @@ I recently rewrote this for v8.2.x with promise chains and other fancy crap.
 
 Ubuntu/Mint/Debian
 ```
-sudo apt-get jp2a ffmpeg nodejs git
+sudo apt-get jp2a ffmpeg nodejs git youtube-dl
 ```
 Redhat/Fedora/Centos
 ```
-sudo yum install jp2a ffmpeg nodejs git
+sudo yum install jp2a ffmpeg nodejs git youtube-dl
 ```
 OSX
 
 Install Homebrew - http://brew.sh/
 ```
-brew install jp2a ffmpeg nodejs git
+brew install jp2a ffmpeg nodejs git youtube-dl
 ```
 
 ### movie2ascii

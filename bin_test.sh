@@ -43,4 +43,17 @@ else
 	echo "  Found ffprobe: $whichffprobe"
 fi
 
+# FFPROBE Test
+whichyoutubedl=$(which youtube-dl)
+if ! [ -x "$whichyoutubedl" ] ; then
+	echo "  Missing youtube-dl"
+	echo "    Get it here: https://ytdl-org.github.io/youtube-dl/"
+	echo "    Or install:"
+	echo "      OSX: brew install youtube-dl"
+	echo "      Ubuntu/Mint/Debian: sudo apt install youtube-dl"
+	echo "      Redhat/Fedora/Centos: sudo yum install youtube-dl"
+else
+	echo "  Found youtube-dl: $whichyoutubedl"
+fi
+
 echo "==============================================="
